@@ -179,25 +179,49 @@ class CharacterIntegration {
         
         console.log('🤖 Bot message received for character:', text.substring(0, 50) + '...');
         
+        // Показываем персонажа с анимацией радости
+        if (!this.character.isVisible) {
+            this.character.show();
+        }
+        
+        // Персонаж реагирует с радостью на ответ
+        this.character.setEmotion('happy');
+        
+        // Анимация "говорения" персонажа
+        this.character.startSpeaking();
+        
         // Автоматически озвучиваем ответ бота, если включено
         if (CharacterConfig.speech.autoSpeak) {
             this.character.speak(text, this.character.currentLanguage);
         }
         
-        // Определяем эмоцию и устанавливаем её
-        const emotion = this.character.detectEmotionFromText(text);
-        this.character.setEmotion(emotion);
-        
-        // Показываем персонажа, если он скрыт
-        if (!this.character.isVisible) {
-            this.character.show();
-        }
+        // Через некоторое время возвращаемся к нейтральному состоянию
+        setTimeout(() => {
+            if (this.character) {
+                this.character.stopSpeaking();
+                this.character.setEmotion('neutral');
+            }
+        }, 3000);
     }
 
     onUserMessage(text) {
         if (!this.character) return;
         
         console.log('👤 User message received:', text.substring(0, 50) + '...');
+        
+        // Персонаж внимательно слушает
+        this.character.setEmotion('thinking');
+        
+        // Анимация "внимания"
+        this.character.startListening();
+        
+        // Через короткое время переходим в состояние "думаю"
+        setTimeout(() => {
+            if (this.character) {
+                this.character.setEmotion('thinking');
+            }
+        }, 1000);
+    }
         
         // Персонаж показывает, что слушает
         this.character.setEmotion('thinking');
@@ -228,11 +252,26 @@ class CharacterIntegration {
         console.log('💬 Chat opened');
         
         if (CharacterConfig.behavior.hideWhenChatOpen) {
+            // Плавно скрываем персонажа
             this.character.hide();
         } else {
             // Персонаж радуется открытию чата
             this.character.setEmotion('excited');
-            this.character.wave();
+            this.character.show();
+            
+            // Анимация приветствия
+            setTimeout(() => {
+                if (this.character) {
+                    this.character.wave();
+                }
+            }, 500);
+            
+            // Переходим в готовое состояние
+            setTimeout(() => {
+                if (this.character) {
+                    this.character.setEmotion('helpful');
+                }
+            }, 2000);
         }
     }
 
@@ -242,10 +281,20 @@ class CharacterIntegration {
         console.log('❌ Chat closed');
         
         if (CharacterConfig.behavior.hideWhenChatOpen) {
+            // Плавно показываем персонажа
             this.character.show();
-        } else {
-            // Персонаж возвращается в обычное состояние
             this.character.setEmotion('neutral');
+        } else {
+            // Персонаж машет на прощание
+            this.character.setEmotion('happy');
+            this.character.wave();
+            
+            // Возвращается в спокойное состояние
+            setTimeout(() => {
+                if (this.character) {
+                    this.character.setEmotion('neutral');
+                }
+            }, 2000);
         }
     }
 

@@ -9,9 +9,9 @@
 
 .character-avatar {
     position: fixed !important;
-    bottom: 100px !important;
-    right: 180px !important;
-    z-index: 9999 !important;
+    bottom: 120px !important;
+    right: 100px !important;
+    z-index: 9998 !important;
     
     pointer-events: auto !important;
     user-select: none !important;
@@ -23,6 +23,19 @@
     
     /* Фильтры для улучшения качества */
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    
+    /* Анимация появления */
+    animation: characterFloat 3s ease-in-out infinite;
+}
+
+/* Плавающая анимация для персонажа */
+@keyframes characterFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+    }
+    50% { 
+        transform: translateY(-8px) scale(1.02);
+    }
 }
 
 .character-avatar:hover {
@@ -520,4 +533,79 @@
 
 .character-avatar.debug .character-speech-bubble {
     border-color: red;
+}
+
+/* ============================================ */
+/* АНИМАЦИИ СВЯЗИ С ЧАТОМ                      */
+/* ============================================ */
+
+/* Когда персонаж слушает пользователя */
+.character-avatar.listening {
+    animation: listening 1s ease-in-out infinite;
+}
+
+@keyframes listening {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg);
+    }
+    25% { 
+        transform: scale(1.02) rotate(1deg);
+    }
+    75% { 
+        transform: scale(1.02) rotate(-1deg);
+    }
+}
+
+/* Когда персонаж говорит */
+.character-avatar.speaking {
+    animation: speaking 0.5s ease-in-out infinite;
+}
+
+@keyframes speaking {
+    0%, 100% { 
+        transform: scale(1);
+    }
+    50% { 
+        transform: scale(1.05);
+    }
+}
+
+/* Когда персонаж взволнован (чат открыт) */
+.character-avatar.excited {
+    animation: excited 0.8s ease-in-out infinite;
+}
+
+@keyframes excited {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+    }
+    25% { 
+        transform: translateY(-5px) scale(1.03);
+    }
+    75% { 
+        transform: translateY(-3px) scale(1.02);
+    }
+}
+
+/* Соединительная линия между персонажем и чатом */
+.character-connection-line {
+    position: fixed;
+    bottom: 140px;
+    right: 150px;
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(180deg, 
+        rgba(59, 87, 179, 0.3) 0%, 
+        rgba(59, 87, 179, 0.1) 50%, 
+        transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 9997;
+    pointer-events: none;
+}
+
+/* Показываем линию когда чат открыт */
+#chat-window.chat-visible + .character-connection-line {
+    opacity: 1;
+}
 }
