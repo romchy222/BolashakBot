@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models import Category, FAQ, UserQuery
+from flask import current_app
 from app import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
 
-admin_bp = Blueprint('admin', __name__)
+admin_bp = Blueprint('admin_panel', __name__)
 
 @admin_bp.route('/')
 def index():
