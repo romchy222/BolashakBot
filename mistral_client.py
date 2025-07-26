@@ -10,9 +10,18 @@ class MistralClient:
         self.api_key = os.getenv("MISTRAL_API_KEY", "your-mistral-api-key")
         self.base_url = "https://api.mistral.ai/v1"
         self.model = "mistral-small"
+        self.fallback_mode = self.api_key == "your-mistral-api-key" or not self.api_key
+        
+        if self.fallback_mode:
+            logging.warning("⚠️ Mistral API key not configured, using fallback responses")
         
     def get_chat_response(self, user_message: str, language: str = 'ru', context: str = "") -> str:
         """Get structured response from Mistral AI without links"""
+        
+        # If in fallback mode, use predefined responses
+        if self.fallback_mode:
+            return self._get_fallback_response(user_message, language)
+            
         try:
             # Prepare system prompt based on language - NO LINKS ALLOWED
             system_prompts = {
@@ -100,29 +109,130 @@ class MistralClient:
                 return self._clean_response_from_links(answer)
             else:
                 logging.error(f"Mistral API error: {response.status_code} - {response.text}")
-                return self._get_fallback_response(language)
+                return self._get_fallback_response(user_message, language)
                 
         except requests.exceptions.Timeout:
             logging.error("Mistral API timeout")
-            return self._get_fallback_response(language)
+            return self._get_fallback_response(user_message, language)
         except requests.exceptions.RequestException as e:
             logging.error(f"Mistral API request error: {str(e)}")
-            return self._get_fallback_response(language)
+            return self._get_fallback_response(user_message, language)
         except Exception as e:
             logging.error(f"Unexpected error with Mistral API: {str(e)}")
-            return self._get_fallback_response(language)
+            return self._get_fallback_response(user_message, language)
     
-    def _get_fallback_response(self, language: str) -> str:
-        """Fallback response when AI is unavailable - NO LINKS"""
-        fallback_responses = {
-            'ru': """Извините, временно возникли технические сложности с AI-помощником. 
-Пожалуйста, обратитесь в приемную комиссию университета "Болашак" для получения актуальной информации.
-Контактный телефон: +7 (7242) 26-14-01""",
-            'kk': """Кешіріңіз, AI көмекшісімен уақытша техникалық қиындықтар туындады.
-"Болашақ" университетінің қабылдау комиссиясына жаңа ақпарат алу үшін хабарласыңыз.
-Байланыс телефоны: +7 (7242) 26-14-01"""
-        }
-        return fallback_responses.get(language, fallback_responses['ru'])
+    def _get_fallback_response(self, user_message: str = "", language: str = 'ru') -> str:
+        """Fallback response when AI is unavailable - with smart responses"""
+        
+        # Simple keyword-based responses for common questions
+        message_lower = user_message.lower()
+        
+        if language == 'ru':
+            # Поступление
+            if any(word in message_lower for word in ['поступ', 'как поступ', 'поступать']):
+                return """Для поступления в университет "Болашак" необходимо:
+
+📋 Основные требования:
+• Документ об образовании (аттестат/диплом)
+• Удостоверение личности
+• Медицинская справка
+• Фотографии
+
+📅 Этапы поступления:
+1. Подача документов в приемную комиссию
+2. Прохождение вступительных испытаний (если требуются)
+3. Участие в конкурсе на основе результатов
+4. Зачисление
+
+За подробной информацией обращайтесь в приемную комиссию: +7 (7242) 26-14-01"""
+
+            # Документы
+            elif any(word in message_lower for word in ['документ', 'справк', 'нужн']):
+                return """Перечень документов для поступления:
+
+📄 Обязательные документы:
+• Заявление на поступление
+• Документ об образовании (оригинал и копия)
+• Удостоверение личности (оригинал и копия)
+• Медицинская справка формы 086-У
+• 6 фотографий размером 3х4 см
+
+📄 Дополнительные документы (при необходимости):
+• Справка о льготах
+• Результаты ЕНТ/КТА
+• Документы о военной службе (для мужчин)
+
+Приемная комиссия: +7 (7242) 26-14-01"""
+
+            # Специальности
+            elif any(word in message_lower for word in ['специальност', 'программ', 'факультет']):
+                return """Университет "Болашак" предлагает обучение по следующим направлениям:
+
+🎓 Основные специальности:
+• Педагогические науки
+• Экономика и бизнес
+• Информационные технологии
+• Гуманитарные науки
+• Естественные науки
+
+📚 Формы обучения:
+• Очная (дневная)
+• Заочная
+• Дистанционная
+
+Для получения полного списка специальностей и требований обращайтесь в приемную комиссию: +7 (7242) 26-14-01"""
+
+            # Контакты
+            elif any(word in message_lower for word in ['контакт', 'телефон', 'адрес']):
+                return """Контактная информация университета "Болашак":
+
+📞 Приемная комиссия: +7 (7242) 26-14-01
+📍 Адрес: г. Кызылорда
+🕒 Время работы: понедельник-пятница 9:00-18:00
+
+Приемная комиссия готова ответить на все ваши вопросы о поступлении!"""
+
+            # Спасибо
+            elif any(word in message_lower for word in ['спасибо', 'благодар']):
+                return """Пожалуйста! Рад был помочь! 😊
+
+Если у вас возникнут дополнительные вопросы, всегда обращайтесь в приемную комиссию университета "Болашак".
+
+Удачи с поступлением! 🎓"""
+
+            else:
+                return """Спасибо за ваш вопрос! 
+
+К сожалению, я не могу дать точный ответ на этот вопрос. Для получения подробной и актуальной информации рекомендую обратиться в приемную комиссию университета "Болашак".
+
+📞 Телефон: +7 (7242) 26-14-01
+Специалисты приемной комиссии предоставят вам исчерпывающую информацию по всем вопросам поступления."""
+
+        else:  # Kazakh
+            if any(word in message_lower for word in ['түс', 'қалай түс']):
+                return """"Болашақ" университетіне түсу үшін:
+
+📋 Негізгі талаптар:
+• Білім туралы құжат (аттестат/диплом)
+• Жеке куәлік
+• Медициналық анықтама
+• Фотосуреттер
+
+📅 Түсу кезеңдері:
+1. Қабылдау комиссиясына құжаттар тапсыру
+2. Кіру сынақтарын тапсыру (қажет болса)
+3. Нәтижелер негізінде конкурсқа қатысу
+4. Қабылдау
+
+Толық ақпарат үшін қабылдау комиссиясына хабарласыңыз: +7 (7242) 26-14-01"""
+
+            else:
+                return """Сұрағыңыз үшін рахмет!
+
+Өкінішке орай, бұл сұраққа дәл жауап бере алмаймын. Толық және ең соңғы ақпарат алу үшін "Болашақ" университетінің қабылдау комиссиясына хабарласуыңызды ұсынамын.
+
+📞 Телефон: +7 (7242) 26-14-01
+Қабылдау комиссиясының мамандары түсуге қатысты барлық сұрақтарға толық жауап береді."""
     
     def _clean_response_from_links(self, text: str) -> str:
         """Remove any links and English words from response"""
