@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Debug - QabyldauBot{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">QabyldauBot Debug Panel</h1>
+        
+        <!-- System Status -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-semibold mb-4">System Status</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <i class="fas fa-database text-2xl text-green-600 mb-2"></i>
+                    <p class="font-semibold">Database</p>
+                    <p class="text-sm text-green-600">Connected</p>
+                </div>
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <i class="fas fa-robot text-2xl text-blue-600 mb-2"></i>
+                    <p class="font-semibold">Mistral AI</p>
+                    <p class="text-sm text-blue-600" id="ai-status">Checking...</p>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <i class="fas fa-comments text-2xl text-purple-600 mb-2"></i>
+                    <p class="font-semibold">Chat Widget</p>
+                    <p class="text-sm text-purple-600" id="widget-status">Loading...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Controls -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-semibold mb-4">Test Controls</h2>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <button id="test-chat" class="bg-bolashak-blue text-white px-4 py-2 rounded-lg hover:bg-bolashak-dark">
+                        Test Chat Open/Close
+                    </button>
+                    <button id="test-api" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        Test API Connection
+                    </button>
+                    <button id="clear-console" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                        Clear Console
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Console Log -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Console Log</h2>
+            <div id="debug-console" class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm h-64 overflow-y-auto">
+                <div>QabyldauBot Debug Console initialized...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Widget -->
+<div id="chat-widget" class="fixed bottom-6 right-6 z-50">
+    <button id="chat-button" class="bg-bolashak-blue text-white p-4 rounded-full shadow-lg hover:bg-bolashak-dark transition-all duration-300 hover:scale-110">
+        <i class="fas fa-comments text-xl"></i>
+    </button>
+    
+    <div id="chat-window" class="hidden absolute bottom-16 right-0 w-96 h-96 bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col">
+        <div class="bg-bolashak-blue text-white p-4 rounded-t-lg flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-robot"></i>
+                <span class="font-semibold">QabyldauBot</span>
+            </div>
+            <div class="flex space-x-2">
+                <select id="language-selector" class="bg-bolashak-dark text-white text-sm rounded px-2 py-1 border-none">
+                    <option value="ru">Русский</option>
+                    <option value="kk">Қазақша</option>
+                </select>
+                <button id="close-chat" class="text-white hover:text-gray-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-3">
+            <div class="bot-message bg-white p-3 rounded-lg shadow-sm max-w-xs">
+                <p class="text-sm text-gray-800" id="welcome-message">Привет! Я QabyldauBot. Задайте вопрос о поступлении в университет "Болашак".</p>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex space-x-2">
+                <input 
+                    type="text" 
+                    id="chat-input" 
+                    placeholder="Введите ваш вопрос..." 
+                    class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bolashak-blue"
+                    maxlength="500"
+                >
+                <button 
+                    id="send-button" 
+                    class="bg-bolashak-blue text-white px-4 py-2 rounded-lg hover:bg-bolashak-dark transition-colors"
+                >
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="typing-indicator" class="hidden p-4 border-t border-gray-200">
+            <div class="flex items-center space-x-2 text-gray-500 text-sm">
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                <span>QabyldauBot печатает...</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat-widget.js') }}"></script>
+<script>
+// Debug console functionality
+const debugConsole = document.getElementById('debug-console');
+
+function logToDebugConsole(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = document.createElement('div');
+    logEntry.className = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-blue-400';
+    logEntry.textContent = `[${timestamp}] ${message}`;
+    debugConsole.appendChild(logEntry);
+    debugConsole.scrollTop = debugConsole.scrollHeight;
+}
+
+// Override console methods to capture logs
+const originalLog = console.log;
+const originalError = console.error;
+const originalWarn = console.warn;
+
+console.log = function(...args) {
+    originalLog.apply(console, args);
+    logToDebugConsole(args.join(' '), 'info');
+};
+
+console.error = function(...args) {
+    originalError.apply(console, args);
+    logToDebugConsole(args.join(' '), 'error');
+};
+
+console.warn = function(...args) {
+    originalWarn.apply(console, args);
+    logToDebugConsole(args.join(' '), 'warn');
+};
+
+// Test controls
+document.getElementById('test-chat').addEventListener('click', () => {
+    if (window.QabyldauBot) {
+        logToDebugConsole('Testing chat widget toggle...', 'info');
+        window.QabyldauBot.toggleChat();
+    } else {
+        logToDebugConsole('QabyldauBot not found in global scope', 'error');
+    }
+});
+
+document.getElementById('test-api').addEventListener('click', async () => {
+    logToDebugConsole('Testing API connection...', 'info');
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Тест соединения', language: 'ru' })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            logToDebugConsole(`API test successful. Response time: ${data.response_time}s`, 'success');
+            document.getElementById('ai-status').textContent = 'Connected';
+            document.getElementById('ai-status').className = 'text-sm text-green-600';
+        } else {
+            logToDebugConsole(`API test failed with status: ${response.status}`, 'error');
+            document.getElementById('ai-status').textContent = 'Error';
+            document.getElementById('ai-status').className = 'text-sm text-red-600';
+        }
+    } catch (error) {
+        logToDebugConsole(`API test error: ${error.message}`, 'error');
+        document.getElementById('ai-status').textContent = 'Offline';
+        document.getElementById('ai-status').className = 'text-sm text-red-600';
+    }
+});
+
+document.getElementById('clear-console').addEventListener('click', () => {
+    debugConsole.innerHTML = '<div>Console cleared...</div>';
+});
+
+// Check widget status
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (window.QabyldauBot) {
+            document.getElementById('widget-status').textContent = 'Ready';
+            document.getElementById('widget-status').className = 'text-sm text-green-600';
+            logToDebugConsole('Chat widget is ready', 'success');
+        } else {
+            document.getElementById('widget-status').textContent = 'Error';
+            document.getElementById('widget-status').className = 'text-sm text-red-600';
+            logToDebugConsole('Chat widget failed to initialize', 'error');
+        }
+    }, 500);
+});
+</script>
+{% endblock %}

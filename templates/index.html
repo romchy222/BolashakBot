@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-bolashak-blue text-white shadow-lg">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="{{ url_for('static', filename='images/bolashak-logo.svg') }}" alt="Болашак" class="h-12 w-12">
+                <div>
+                    <h1 class="text-2xl font-bold">Кызылординский университет "Болашак"</h1>
+                    <p class="text-blue-200">QabyldauBot - Ваш помощник по поступлению</p>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <a href="https://bolashak-edu.kz/" target="_blank" class="bg-white text-bolashak-blue px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    Официальный сайт
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Добро пожаловать!</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                QabyldauBot поможет вам получить ответы на вопросы о поступлении в университет "Болашак". 
+                Задайте вопрос в чате, и наш AI-помощник предоставит актуальную информацию.
+            </p>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <i class="fas fa-graduation-cap text-3xl text-bolashak-blue mb-4"></i>
+                <h3 class="font-semibold text-gray-800 mb-2">Поступление</h3>
+                <p class="text-gray-600 text-sm">Информация о вступительных экзаменах и требованиях</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <i class="fas fa-file-alt text-3xl text-bolashak-blue mb-4"></i>
+                <h3 class="font-semibold text-gray-800 mb-2">Документы</h3>
+                <p class="text-gray-600 text-sm">Список необходимых документов для подачи</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <i class="fas fa-book text-3xl text-bolashak-blue mb-4"></i>
+                <h3 class="font-semibold text-gray-800 mb-2">Программы</h3>
+                <p class="text-gray-600 text-sm">Образовательные программы и специальности</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <i class="fas fa-calendar text-3xl text-bolashak-blue mb-4"></i>
+                <h3 class="font-semibold text-gray-800 mb-2">Расписание</h3>
+                <p class="text-gray-600 text-sm">График работы и важные даты</p>
+            </div>
+        </div>
+
+        <!-- Chat Instructions -->
+        <div class="bg-white p-8 rounded-lg shadow-md">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Как пользоваться чатом?</h3>
+            <div class="space-y-3">
+                <div class="flex items-start space-x-3">
+                    <span class="bg-bolashak-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
+                    <p class="text-gray-600">Нажмите на иконку чата в правом нижнем углу экрана</p>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="bg-bolashak-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
+                    <p class="text-gray-600">Выберите язык общения (русский или казахский)</p>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="bg-bolashak-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
+                    <p class="text-gray-600">Задайте ваш вопрос и получите подробный ответ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Chat Widget -->
+<div id="chat-widget" class="fixed bottom-6 right-6 z-50">
+    <!-- Chat Button -->
+    <button id="chat-button" class="bg-bolashak-blue text-white p-4 rounded-full shadow-lg hover:bg-bolashak-dark transition-all duration-300 hover:scale-110">
+        <i class="fas fa-comments text-xl"></i>
+    </button>
+    
+    <!-- Chat Window -->
+    <div id="chat-window" class="hidden absolute bottom-16 right-0 w-96 h-96 bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col">
+        <!-- Chat Header -->
+        <div class="bg-bolashak-blue text-white p-4 rounded-t-lg flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-robot"></i>
+                <div class="ml-2 flex flex-col">
+                    <span class="font-semibold text-lg">QabyldauBot</span>
+                    <div class ="flex items-center mt-1">
+                    <span class="text-xs">онлайн</span>
+                    <span class="status-dot online animate-pulse ml-2"></span>
+                </div>
+              </div>
+            </div>
+            <div class="flex space-x-2">
+                <!-- Language Toggle -->
+                <select id="language-selector" class="bg-bolashak-dark text-white text-sm rounded px-2 py-1 border-none">
+                    <option value="ru">Русский</option>
+                    <option value="kk">Қазақша</option>
+                </select>
+                <button id="close-chat" class="text-white hover:text-gray-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat Messages -->
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-3">
+            <div class="bot-message bg-white p-3 rounded-lg max-w-xs" style="box-shadow:none !important;">
+                
+                <p class="text-sm text-gray-800" id="welcome-message">Привет! Я QabyldauBot. Задайте вопрос о поступлении в университет "Болашак".</p>
+            </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="p-4 border-t border-gray-200">
+            <!-- Быстрые слова -->
+            <div class="quick-replies-wrapper">
+              <button class="scroll-btn" id="scroll-left">&#8592;</button>
+              <div class="quick-replies-container" id="scroll-container">
+                <button class="quick-reply" data-message="Как поступить?">Как поступить?</button>
+                <button class="quick-reply" data-message="Какие справки нужны?">Какие справки нужны?</button>
+                <button class="quick-reply" data-message="Специальности">Специальности</button>
+                <button class="quick-reply" data-message="Спасибо!">Спасибо!</button>
+                <button class="quick-reply" data-message="Расписание">Расписание</button>
+                <!-- Можно добавлять еще -->
+              </div>
+              <button class="scroll-btn" id="scroll-right">&#8594;</button>
+            </div>
+
+            
+            <div class="flex space-x-2 items-center">
+                <div class="input-wrapper" style="position: relative; flex: 1;">
+                  <input 
+                    type="text" 
+                    id="chat-input" 
+                    placeholder="Введите ваш вопрос..." 
+                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bolashak-blue focus:border-transparent transition duration-200 w-full"
+                    maxlength="500"
+                  >
+                  <button id="clear-input" class="clear-btn" title="Очистить">&times;</button>
+                    
+                </div>
+                <button 
+                  id="send-button" 
+                  class="bg-bolashak-blue hover:bg-bolashak-dark transition-colors p-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Typing Indicator -->
+        <div id="typing-indicator" class="hidden p-4 border-t border-gray-200">
+            <div class="flex items-center space-x-2 text-gray-500 text-sm">
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                <span>QabyldauBot печатает...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8 mt-16">
+    <div class="container mx-auto px-4 text-center">
+        <p>&copy; 2025 Кызылординский университет "Болашак". Все права защищены.</p>
+        <p class="text-gray-400 mt-2">QabyldauBot - AI-powered помощник абитуриента</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+
+<!-- иконки бота и юзера дядя
+находятся в chat widget в функции add message-->
+
+<script>
+  
+</script>
+
+<!-- крестил для поле ввода -->
+<script>
+    const input = document.getElementById('chat-input');
+    const clearBtn = document.getElementById('clear-input');
+
+    input.addEventListener('input', () => {
+      if (input.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      clearBtn.style.display = 'none';
+      input.focus();
+    });
+</script>
+
+<!-- быстрый ответ или нет -->
+<script>
+    const quickReplies = [
+      { message: "Как поступить?" },
+      { message: "Какие справки нужны?" },
+      { message: "Специальности" },
+      { message: "Спасибо!" },
+      { message: "Расписание" }
+    ];
+    // функция перемешивания массива
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // функция обновления кнопок
+    function updateQuickReplies() {
+      const container = document.getElementById('scroll-container');
+      container.innerHTML = ''; // очищаем
+
+      shuffleArray(quickReplies); // перемешиваем
+
+      // создаем кнопки заново
+      quickReplies.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'quick-reply';
+        btn.dataset.message = item.message;
+        btn.innerText = item.message;
+
+        btn.onclick = () => {
+          document.getElementById('chat-input').value += item.message;
+          // при клике снова перемешиваем и обновляем
+          updateQuickReplies();
+          document.getElementById('send-button').click();
+        };
+
+        container.appendChild(btn);
+      });
+    }
+
+    // при инициализации вызовите:
+    updateQuickReplies();
+</script>
+
+<!-- стрелки перемещение -->
+<script>
+    const container = document.getElementById('scroll-container');
+    document.getElementById('scroll-left').onclick = () => {
+      container.scrollBy({ left: -100, behavior: 'smooth' });
+    };
+    document.getElementById('scroll-right').onclick = () => {
+      container.scrollBy({ left: 100, behavior: 'smooth' });
+    };
+</script>
+
+<script src="{{ url_for('static', filename='js/chat-widget.js') }}"></script>
+{% endblock %}

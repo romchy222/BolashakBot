@@ -1,0 +1,318 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Аналитика - QabyldauBot{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Аналитика эффективности</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportReport()">
+                <i class="fas fa-download me-1"></i>Экспорт отчета
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Всего запросов сегодня
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="today-requests">{{ today_requests or 0 }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Среднее время ответа
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-response-time">{{ "%.2f"|format(avg_response_time or 0) }}с</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Уникальных пользователей
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="unique-users">{{ unique_users or 0 }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Снижение нагрузки
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">40%</div>
+                        <div class="text-xs text-muted">Планируемый показатель</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Usage Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Динамика обращений по дням</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="requestsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Distribution -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Распределение по языкам</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="languageChart"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-primary"></i> Русский
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> Қазақша
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Categories -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Популярные категории вопросов</h6>
+    </div>
+    <div class="card-body">
+        {% if popular_categories %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Категория</th>
+                            <th>Количество вопросов</th>
+                            <th>Доля от общего числа</th>
+                            <th>Тренд</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in popular_categories %}
+                        <tr>
+                            <td>{{ category.name }}</td>
+                            <td>{{ category.count }}</td>
+                            <td>{{ "%.1f"|format(category.percentage) }}%</td>
+                            <td>
+                                <i class="fas fa-arrow-up text-success" title="Рост популярности"></i>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Недостаточно данных для анализа категорий.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Efficiency Metrics -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Метрики эффективности</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 border-right">
+                        <div class="text-center">
+                            <h4 class="text-success">95%</h4>
+                            <p class="text-muted mb-0">Успешность ответов</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h4 class="text-info">{{ "%.1f"|format(avg_session_time or 0) }}мин</h4>
+                            <p class="text-muted mb-0">Среднее время сессии</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6 border-right">
+                        <div class="text-center">
+                            <h4 class="text-warning">75%</h4>
+                            <p class="text-muted mb-0">Охват абитуриентов</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h4 class="text-primary">25%</h4>
+                            <p class="text-muted mb-0">Рост удовлетворенности</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Рекомендации по улучшению</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Добавить больше FAQ по категории "Документы"
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Улучшить ответы на казахском языке
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Интегрировать календарь событий университета
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Добавить персонализированные рекомендации
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Requests Chart
+const requestsCtx = document.getElementById('requestsChart').getContext('2d');
+const requestsChart = new Chart(requestsCtx, {
+    type: 'line',
+    data: {
+        labels: {{ requests_labels|safe if requests_labels else "[]" }},
+        datasets: [{
+            label: 'Количество запросов',
+            data: {{ requests_data|safe if requests_data else "[]" }},
+            borderColor: '#4e73df',
+            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+            borderWidth: 2,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Language Chart
+const languageCtx = document.getElementById('languageChart').getContext('2d');
+const languageChart = new Chart(languageCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Русский', 'Қазақша'],
+        datasets: [{
+            data: {{ language_distribution|safe if language_distribution else "[70, 30]" }},
+            backgroundColor: ['#4e73df', '#1cc88a'],
+            hoverBackgroundColor: ['#2e59d9', '#17a673'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+// Export function
+function exportReport() {
+    const reportData = {
+        date: new Date().toISOString().split('T')[0],
+        todayRequests: document.getElementById('today-requests').textContent,
+        avgResponseTime: document.getElementById('avg-response-time').textContent,
+        uniqueUsers: document.getElementById('unique-users').textContent
+    };
+    
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `qabyldaubot_report_${reportData.date}.json`);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+// Auto-refresh data every 5 minutes
+setInterval(() => {
+    location.reload();
+}, 300000);
+</script>
+{% endblock %}

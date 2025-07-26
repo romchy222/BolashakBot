@@ -1,0 +1,103 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Дашборд</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Всего запросов
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_queries }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            FAQ записей
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_faqs }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-question-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Категорий
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_categories }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tags fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Queries -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Последние запросы пользователей</h6>
+    </div>
+    <div class="card-body">
+        {% if recent_queries %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Язык</th>
+                            <th>Вопрос</th>
+                            <th>Время ответа</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for query in recent_queries %}
+                        <tr>
+                            <td>{{ query.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'primary' if query.language == 'ru' else 'success' }}">
+                                    {{ 'Русский' if query.language == 'ru' else 'Қазақша' }}
+                                </span>
+                            </td>
+                            <td>{{ query.user_question[:80] }}{% if query.user_question|length > 80 %}...{% endif %}</td>
+                            <td>{{ "%.2f"|format(query.response_time) }}с</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Пока нет запросов от пользователей.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

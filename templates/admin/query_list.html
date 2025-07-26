@@ -1,0 +1,91 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Запросы пользователей</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        {% if queries.items %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Дата/Время</th>
+                            <th>Язык</th>
+                            <th>IP</th>
+                            <th>Вопрос</th>
+                            <th>Ответ</th>
+                            <th>Время ответа</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for query in queries.items %}
+                        <tr>
+                            <td>{{ query.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'primary' if query.language == 'ru' else 'success' }}">
+                                    {{ 'Русский' if query.language == 'ru' else 'Қазақша' }}
+                                </span>
+                            </td>
+                            <td>{{ query.ip_address }}</td>
+                            <td>
+                                <div style="max-width: 200px; word-wrap: break-word;">
+                                    {{ query.user_question[:100] }}{% if query.user_question|length > 100 %}...{% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="max-width: 300px; word-wrap: break-word;">
+                                    {{ query.ai_response[:150] }}{% if query.ai_response|length > 150 %}...{% endif %}
+                                </div>
+                            </td>
+                            <td>{{ "%.2f"|format(query.response_time) }}с</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if queries.pages > 1 %}
+            <nav aria-label="Queries pagination">
+                <ul class="pagination justify-content-center">
+                    {% if queries.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.queries', page=queries.prev_num) }}">Предыдущая</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in queries.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != queries.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.queries', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if queries.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.queries', page=queries.next_num) }}">Следующая</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <p class="text-muted">Пока нет запросов от пользователей.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

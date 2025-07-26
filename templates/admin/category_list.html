@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Управление категориями</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('admin.new_category') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-plus me-1"></i>Добавить категорию
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        {% if categories %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название (RU)</th>
+                            <th>Название (KK)</th>
+                            <th>Описание (RU)</th>
+                            <th>FAQ кол-во</th>
+                            <th>Создана</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td>{{ category.id }}</td>
+                            <td>{{ category.name_ru }}</td>
+                            <td>{{ category.name_kk }}</td>
+                            <td>{{ category.description_ru[:50] }}{% if category.description_ru and category.description_ru|length > 50 %}...{% endif %}</td>
+                            <td>{{ category.faqs|length }}</td>
+                            <td>{{ category.created_at.strftime('%d.%m.%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Пока нет категорий. <a href="{{ url_for('admin.new_category') }}">Добавить первую категорию</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

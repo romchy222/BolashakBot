@@ -1,0 +1,121 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if faq %}Редактировать{% else %}Новый{% endif %} FAQ - QabyldauBot{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{% if faq %}Редактировать FAQ{% else %}Новый FAQ{% endif %}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin.faqs') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label">Категория</label>
+                                <select class="form-select" id="category_id" name="category_id" required>
+                                    <option value="">Выберите категорию</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}" 
+                                            {% if faq and faq.category_id == category.id %}selected{% endif %}>
+                                        {{ category.name_ru }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                           {% if not faq or faq.is_active %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_active">
+                                        Активный FAQ
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="question_ru" class="form-label">Вопрос (Русский)</label>
+                                <textarea class="form-control" id="question_ru" name="question_ru" rows="3" required>{{ faq.question_ru if faq else '' }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="question_kk" class="form-label">Вопрос (Қазақша)</label>
+                                <textarea class="form-control" id="question_kk" name="question_kk" rows="3" required>{{ faq.question_kk if faq else '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="answer_ru" class="form-label">Ответ (Русский)</label>
+                                <textarea class="form-control" id="answer_ru" name="answer_ru" rows="6" required>{{ faq.answer_ru if faq else '' }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="answer_kk" class="form-label">Ответ (Қазақша)</label>
+                                <textarea class="form-control" id="answer_kk" name="answer_kk" rows="6" required>{{ faq.answer_kk if faq else '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.faqs') }}" class="btn btn-secondary me-md-2">Отмена</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>{% if faq %}Обновить{% else %}Создать{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Рекомендации по составлению FAQ</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Для вопросов:</h6>
+                        <ul class="small text-muted">
+                            <li>Формулируйте как реальные вопросы абитуриентов</li>
+                            <li>Используйте простые и понятные формулировки</li>
+                            <li>Включайте ключевые слова для поиска</li>
+                            <li>Переводите точно на казахский язык</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Для ответов:</h6>
+                        <ul class="small text-muted">
+                            <li>Давайте конкретную и актуальную информацию</li>
+                            <li>Указывайте ссылки на официальные документы</li>
+                            <li>Включайте контакты для дополнительных вопросов</li>
+                            <li>Проверяйте соответствие переводов</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

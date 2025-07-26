@@ -1,0 +1,188 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Парсинг сайта университета - QabyldauBot{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Обновление базы знаний с сайта университета</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-globe me-2"></i>
+                    Автоматический сбор данных
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Система автоматически изучит сайт университета bolashak-edu.kz и создаст структурированные FAQ записи 
+                    на основе найденной информации. Данные будут обработаны и адаптированы для ответов чат-бота без прямых ссылок.
+                </p>
+                
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Что будет собрано:</strong>
+                    <ul class="mt-2 mb-0">
+                        <li>Информация о поступлении и документах</li>
+                        <li>Программы обучения и факультеты</li>
+                        <li>Расписание и контактные данные</li>
+                        <li>Общая информация об университете</li>
+                    </ul>
+                </div>
+                
+                <form method="POST" class="mt-4">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="scrapeBtn">
+                            <i class="fas fa-download me-2"></i>
+                            Начать сбор данных с сайта
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-3 text-center">
+                    <small class="text-muted">
+                        Процесс может занять 2-5 минут в зависимости от размера сайта
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Процесс обработки</h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h6>1. Сбор страниц</h6>
+                            <p class="small text-muted">Изучение структуры сайта университета</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h6>2. Извлечение контента</h6>
+                            <p class="small text-muted">Получение текстовой информации</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h6>3. Структурирование</h6>
+                            <p class="small text-muted">Создание вопросов и ответов</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h6>4. Сохранение</h6>
+                            <p class="small text-muted">Добавление в базу FAQ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-success">Преимущества</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Актуальная информация с официального сайта
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Автоматическое создание FAQ записей
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Двуязычная поддержка (русский/казахский)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Структурированные ответы без ссылок
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e3e6f0;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -1.25rem;
+    top: 0.25rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4e73df;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #e3e6f0;
+}
+
+.timeline-content h6 {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.timeline-content p {
+    margin-bottom: 0;
+    font-size: 0.75rem;
+}
+</style>
+
+<script>
+document.getElementById('scrapeBtn').addEventListener('click', function() {
+    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Выполняется сбор данных...';
+    this.disabled = true;
+    
+    // Показываем прогресс
+    setTimeout(() => {
+        if (!this.disabled) return;
+        this.innerHTML = '<i class="fas fa-cog fa-spin me-2"></i>Обработка контента...';
+    }, 3000);
+    
+    setTimeout(() => {
+        if (!this.disabled) return;
+        this.innerHTML = '<i class="fas fa-database fa-spin me-2"></i>Сохранение в базу...';
+    }, 8000);
+});
+</script>
+{% endblock %}

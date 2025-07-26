@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if category %}Редактировать{% else %}Новая{% endif %} категория - QabyldauBot{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{% if category %}Редактировать категорию{% else %}Новая категория{% endif %}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin.categories') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name_ru" class="form-label">Название (Русский)</label>
+                                <input type="text" class="form-control" id="name_ru" name="name_ru" 
+                                       value="{{ category.name_ru if category else '' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name_kk" class="form-label">Название (Қазақша)</label>
+                                <input type="text" class="form-control" id="name_kk" name="name_kk" 
+                                       value="{{ category.name_kk if category else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="description_ru" class="form-label">Описание (Русский)</label>
+                                <textarea class="form-control" id="description_ru" name="description_ru" rows="3">{{ category.description_ru if category else '' }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="description_kk" class="form-label">Описание (Қазақша)</label>
+                                <textarea class="form-control" id="description_kk" name="description_kk" rows="3">{{ category.description_kk if category else '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.categories') }}" class="btn btn-secondary me-md-2">Отмена</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>{% if category %}Обновить{% else %}Создать{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Справка</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    Категории используются для группировки FAQ записей и помогают организовать базу знаний чат-бота.
+                </p>
+                <hr>
+                <h6>Рекомендации:</h6>
+                <ul class="small text-muted">
+                    <li>Используйте краткие и понятные названия</li>
+                    <li>Обязательно заполните поля на обоих языках</li>
+                    <li>Описание поможет пользователям понять содержание категории</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
