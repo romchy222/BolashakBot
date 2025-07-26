@@ -14,6 +14,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
+    <!-- Character Avatar CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/character-avatar.css') }}">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -30,6 +33,12 @@
 </head>
 <body class="bg-gray-50">
     {% block content %}{% endblock %}
+    
+    <!-- Character Avatar Scripts -->
+    <script src="{{ url_for('static', filename='js/universal-widget-config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/character-config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/character-avatar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/character-integration.js') }}"></script>
     
     {% block scripts %}{% endblock %}
 </body>

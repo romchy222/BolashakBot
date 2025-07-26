@@ -49,10 +49,10 @@ db.init_app(app)
 
 # Import views to register routes
 from views import *
-from admin import admin_bp
+# from admin import admin_bp
 
-# Register blueprints
-app.register_blueprint(admin_bp, url_prefix='/admin')
+# Register blueprints  
+# app.register_blueprint(admin_bp, url_prefix='/admin')
 
 with app.app_context():
     # Import models to ensure tables are created

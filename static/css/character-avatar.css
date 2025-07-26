@@ -1,0 +1,523 @@
+/**
+ * QabyldauBot 2D Character Avatar CSS Animations
+ * Стили и анимации для анимированного персонажа
+ */
+
+/* ============================================ */
+/* ОСНОВНОЙ КОНТЕЙНЕР ПЕРСОНАЖА                */
+/* ============================================ */
+
+.character-avatar {
+    position: fixed !important;
+    bottom: 100px !important;
+    right: 180px !important;
+    z-index: 9999 !important;
+    
+    pointer-events: auto !important;
+    user-select: none !important;
+    
+    display: none;
+    
+    /* Плавные переходы */
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    
+    /* Фильтры для улучшения качества */
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+.character-avatar:hover {
+    cursor: pointer !important;
+    filter: drop-shadow(0 6px 16px rgba(59, 87, 179, 0.3));
+}
+
+/* ============================================ */
+/* SVG ПЕРСОНАЖА                               */
+/* ============================================ */
+
+.character-svg {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+}
+
+/* Плавные переходы для всех элементов SVG */
+.character-svg * {
+    transition: all 0.3s ease !important;
+}
+
+/* ============================================ */
+/* ТЕНЬ ПЕРСОНАЖА                              */
+/* ============================================ */
+
+.character-shadow {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+}
+
+.character-avatar:hover .character-shadow {
+    opacity: 0.5;
+    transform: scale(1.1);
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ТЕЛА                               */
+/* ============================================ */
+
+.character-body {
+    transform-origin: center bottom;
+}
+
+.character-torso {
+    stroke-dasharray: 0;
+    transition: all 0.3s ease;
+}
+
+.character-arms {
+    transform-origin: center center;
+}
+
+.character-arm {
+    transform-origin: center center;
+    transition: all 0.3s ease;
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ГОЛОВЫ                             */
+/* ============================================ */
+
+.character-head {
+    transform-origin: center bottom;
+    transition: transform 0.5s ease-in-out;
+}
+
+.character-head-shape {
+    transition: all 0.3s ease;
+}
+
+.character-hair {
+    transform-origin: center top;
+}
+
+.character-hat {
+    transform-origin: center bottom;
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ЛИЦА                               */
+/* ============================================ */
+
+.character-face {
+    transform-origin: center center;
+}
+
+/* Глаза */
+.character-eyes {
+    transform-origin: center center;
+}
+
+.character-eye {
+    transform-origin: center center;
+}
+
+.character-eye ellipse {
+    transition: transform 0.15s ease;
+    transform-origin: center center;
+}
+
+.character-pupil-left,
+.character-pupil-right {
+    transition: transform 0.2s ease;
+    transform-origin: center center;
+}
+
+/* Рот */
+.character-mouth {
+    transform-origin: center center;
+}
+
+.character-mouth-shape {
+    transition: d 0.3s ease, transform 0.3s ease;
+    stroke-linecap: round;
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ЭФФЕКТОВ                           */
+/* ============================================ */
+
+.character-effects {
+    pointer-events: none;
+}
+
+.character-sound-waves {
+    transform-origin: center center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.character-sound-waves circle {
+    stroke-dasharray: 5, 5;
+}
+
+.character-glow {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* ============================================ */
+/* ПУЗЫРЬ РЕЧИ                                 */
+/* ============================================ */
+
+.character-speech-bubble {
+    position: absolute;
+    top: -60px;
+    left: -100px;
+    width: 200px;
+    max-width: 300px;
+    
+    background: white;
+    border: 2px solid #3b57b3;
+    border-radius: 15px;
+    padding: 10px 15px;
+    
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    display: none;
+    z-index: 10001;
+    
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    
+    transform-origin: bottom center;
+}
+
+.speech-bubble-content {
+    position: relative;
+    color: #1f2937;
+    text-align: center;
+}
+
+.speech-text {
+    display: block;
+    font-weight: 500;
+}
+
+.speech-bubble-tail {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #3b57b3;
+}
+
+.speech-bubble-tail::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: -8px;
+    
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ПЕРСОНАЖА                          */
+/* ============================================ */
+
+/* Появление персонажа */
+@keyframes characterAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.8);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateY(-5px) scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Исчезновение персонажа */
+@keyframes characterDisappear {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+}
+
+/* Анимация клика */
+@keyframes clickBounce {
+    0% { transform: scale(1); }
+    25% { transform: scale(0.95) rotate(-2deg); }
+    50% { transform: scale(1.05) rotate(2deg); }
+    75% { transform: scale(0.98) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ДЫХАНИЯ                            */
+/* ============================================ */
+
+@keyframes breathing {
+    0%, 100% {
+        transform: scale(1) translateY(0);
+    }
+    50% {
+        transform: scale(1.02) translateY(-1px);
+    }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ РУК                                */
+/* ============================================ */
+
+@keyframes waveArm {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-15deg) translateY(-2px);
+    }
+    50% {
+        transform: rotate(15deg) translateY(-1px);
+    }
+    75% {
+        transform: rotate(-10deg) translateY(-2px);
+    }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ГОЛОВЫ                             */
+/* ============================================ */
+
+@keyframes nodHead {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(3px);
+    }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ РТА                                */
+/* ============================================ */
+
+@keyframes speakingMouth {
+    0% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(1.3) scaleX(0.9);
+    }
+    100% {
+        transform: scaleY(1);
+    }
+}
+
+@keyframes excitedMouth {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2) translateY(-1px);
+    }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ГЛАЗ                               */
+/* ============================================ */
+
+@keyframes sparkleEyes {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.1);
+        filter: brightness(1.3);
+    }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ЭФФЕКТОВ                           */
+/* ============================================ */
+
+@keyframes soundWaves {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+/* ============================================ */
+/* АНИМАЦИИ ПУЗЫРЯ РЕЧИ                        */
+/* ============================================ */
+
+@keyframes bubbleAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(10px);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05) translateY(-2px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes bubbleDisappear {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8) translateY(5px);
+    }
+}
+
+/* ============================================ */
+/* АДАПТИВНОСТЬ                                */
+/* ============================================ */
+
+@media (max-width: 768px) {
+    .character-avatar {
+        bottom: 80px !important;
+        right: 70px !important;
+        transform: scale(0.8) !important;
+    }
+    
+    .character-speech-bubble {
+        width: 150px;
+        max-width: 200px;
+        font-size: 11px;
+        padding: 8px 12px;
+        left: -75px;
+    }
+}
+
+@media (max-width: 480px) {
+    .character-avatar {
+        bottom: 70px !important;
+        right: 20px !important;
+        transform: scale(0.7) !important;
+    }
+    
+    .character-speech-bubble {
+        width: 120px;
+        max-width: 150px;
+        font-size: 10px;
+        padding: 6px 10px;
+        left: -60px;
+    }
+}
+
+/* ============================================ */
+/* СПЕЦИАЛЬНЫЕ СОСТОЯНИЯ                       */
+/* ============================================ */
+
+/* Когда персонаж думает */
+.character-avatar.thinking .character-head {
+    animation: nodHead 2s ease-in-out infinite;
+}
+
+.character-avatar.thinking .character-pupil-left,
+.character-avatar.thinking .character-pupil-right {
+    transform: translateY(-2px);
+}
+
+/* Когда персонаж говорит */
+.character-avatar.speaking .character-head {
+    animation: speakingMouth 0.3s ease-in-out infinite alternate;
+}
+
+/* Когда персонаж слушает */
+.character-avatar.listening .character-head {
+    transform: rotate(3deg);
+}
+
+/* ============================================ */
+/* ДОСТУПНОСТЬ                                 */
+/* ============================================ */
+
+/* Уменьшенные анимации для пользователей с ограниченными возможностями */
+@media (prefers-reduced-motion: reduce) {
+    .character-avatar,
+    .character-avatar * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .character-speech-bubble {
+        animation: none !important;
+    }
+}
+
+/* Высокий контраст */
+@media (prefers-contrast: high) {
+    .character-avatar {
+        filter: contrast(1.2) brightness(1.1);
+    }
+    
+    .character-speech-bubble {
+        border-color: #000;
+        background: #fff;
+        color: #000;
+    }
+}
+
+/* ============================================ */
+/* ОТЛАДОЧНЫЕ СТИЛИ                            */
+/* ============================================ */
+
+.character-avatar.debug {
+    border: 2px dashed red;
+}
+
+.character-avatar.debug .character-svg {
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.character-avatar.debug .character-speech-bubble {
+    border-color: red;
+}
