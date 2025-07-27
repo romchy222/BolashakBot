@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Настройки пользователя</h1>
+
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">Персонализация чата</h2>
+
+            <div class="flex items-center space-x-4 mb-4">
+                <div id="current-avatar" class="w-16 h-16 rounded-full bg-gray-500 flex items-center justify-center text-white text-xl border-4 border-white shadow-md">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-2">Ваш текущий аватар в чате</p>
+                    <button id="change-avatar" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded transition-colors">
+                        Изменить аватар
+                    </button>
+                </div>
+            </div>
+
+            <!-- Скрытая форма загрузки -->
+            <div id="avatar-upload-form" class="hidden bg-gray-100 p-4 rounded-lg mb-4">
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Выберите изображение</label>
+                    <input type="file" id="avatar-file" accept="image/*" class="w-full text-sm">
+                </div>
+                <div class="flex space-x-2">
+                    <button id="upload-avatar" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        Загрузить
+                    </button>
+                    <button id="cancel-upload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm transition-colors">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+
+            <!-- Предустановленные аватары -->
+            <div class="mt-4">
+                <p class="text-sm font-medium text-gray-700 mb-2">Или выберите из галереи:</p>
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="preset-avatar w-12 h-12 rounded-full bg-blue-500 cursor-pointer hover:opacity-80 transition-opacity"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full bg-green-500 cursor-pointer hover:opacity-80 transition-opacity"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full bg-purple-500 cursor-pointer hover:opacity-80 transition-opacity"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full bg-yellow-500 cursor-pointer hover:opacity-80 transition-opacity"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 pt-4">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">Язык по умолчанию</h2>
+            <div class="mb-4">
+                <select id="default-language" class="w-full p-2 border border-gray-300 rounded">
+                    <option value="ru">Русский</option>
+                    <option value="kk">Қазақша</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button id="save-settings" class="bg-bolashak-blue hover:bg-bolashak-dark text-white px-4 py-2 rounded transition-colors">
+                Сохранить настройки
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Элементы интерфейса
+        const currentAvatar = document.getElementById('current-avatar');
+        const changeAvatarBtn = document.getElementById('change-avatar');
+        const uploadForm = document.getElementById('avatar-upload-form');
+        const fileInput = document.getElementById('avatar-file');
+        const uploadBtn = document.getElementById('upload-avatar');
+        const cancelBtn = document.getElementById('cancel-upload');
+        const presetAvatars = document.querySelectorAll('.preset-avatar');
+        const defaultLanguage = document.getElementById('default-language');
+        const saveBtn = document.getElementById('save-settings');
+
+        // Загружаем текущие настройки
+        let userAvatar = localStorage.getItem('qabyldaubot_user_avatar');
+        let userLanguage = localStorage.getItem('qabyldaubot_language') || 'ru';
+
+        // Устанавливаем текущие значения
+        if (userAvatar) {
+            currentAvatar.innerHTML = '';
+            currentAvatar.style.backgroundImage = `url(${userAvatar})`;
+            currentAvatar.style.backgroundSize = 'cover';
+            currentAvatar.style.backgroundPosition = 'center';
+        }
+
+        defaultLanguage.value = userLanguage;
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Настройки пользователя</h1>
+
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">Персонализация чата</h2>
+
+            <div class="flex items-center space-x-4 mb-4">
+                <div id="current-avatar" class="w-16 h-16 rounded-full bg-gray-500 flex items-center justify-center text-white text-xl border-4 border-white shadow-md">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-2">Ваш текущий аватар в чате</p>
+                    <button id="change-avatar" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded transition-colors">
+                        Изменить аватар
+                    </button>
+                </div>
+            </div>
+
+            <!-- Скрытая форма загрузки -->
+            <div id="avatar-upload-form" class="hidden bg-gray-100 p-4 rounded-lg mb-4">
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Выберите изображение</label>
+                    <input type="file" id="avatar-file" accept="image/*" class="w-full text-sm">
+                </div>
+                <div class="flex space-x-2">
+                    <button id="upload-avatar" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        Загрузить
+                    </button>
+                    <button id="cancel-upload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm transition-colors">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+
+            <!-- Предустановленные аватары -->
+            <div class="mt-4">
+                <p class="text-sm font-medium text-gray-700 mb-2">Или выберите из галереи:</p>
+                <div class="grid grid-cols-5 gap-2">
+                    <div class="preset-avatar w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
+                         style="background-color: #3b57b3;" data-color="#3b57b3"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
+                         style="background-color: #10b981;" data-color="#10b981"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
+                         style="background-color: #8b5cf6;" data-color="#8b5cf6"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
+                         style="background-color: #f59e0b;" data-color="#f59e0b"></div>
+                    <div class="preset-avatar w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
+                         style="background-color: #ef4444;" data-color="#ef4444"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 pt-4">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">Язык по умолчанию</h2>
+            <div class="mb-4">
+                <select id="default-language" class="w-full p-2 border border-gray-300 rounded">
+                    <option value="ru">Русский</option>
+                    <option value="kk">Қазақша</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 pt-4 mt-4">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">Настройки персонажа</h2>
+            <div class="mb-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" id="show-character" class="form-checkbox h-5 w-5 text-blue-600" checked>
+                    <span class="ml-2 text-gray-700">Показывать анимированного персонажа</span>
+                </label>
+            </div>
+            <div class="mb-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" id="speech-enabled" class="form-checkbox h-5 w-5 text-blue-600" checked>
+                    <span class="ml-2 text-gray-700">Озвучивать ответы голосом</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button id="save-settings" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors">
+                Сохранить настройки
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Элементы интерфейса
+        const currentAvatar = document.getElementById('current-avatar');
+        const changeAvatarBtn = document.getElementById('change-avatar');
+        const uploadForm = document.getElementById('avatar-upload-form');
+        const fileInput = document.getElementById('avatar-file');
+        const uploadBtn = document.getElementById('upload-avatar');
+        const cancelBtn = document.getElementById('cancel-upload');
+        const presetAvatars = document.querySelectorAll('.preset-avatar');
+        const defaultLanguage = document.getElementById('default-language');
+        const showCharacter = document.getElementById('show-character');
+        const speechEnabled = document.getElementById('speech-enabled');
+        const saveBtn = document.getElementById('save-settings');
+
+        // Загружаем текущие настройки
+        let userAvatar = localStorage.getItem('qabyldaubot_user_avatar');
+        let userLanguage = localStorage.getItem('qabyldaubot_language') || 'ru';
+        let characterEnabled = localStorage.getItem('qabyldaubot_show_character') !== 'false';
+        let speechEnabledValue = localStorage.getItem('qabyldaubot_speech_enabled') !== 'false';
+
+        // Устанавливаем текущие значения
+        if (userAvatar) {
+            currentAvatar.innerHTML = '';
+            // Если это цвет
+            if (userAvatar.startsWith('#') || userAvatar.startsWith('rgb')) {
+                currentAvatar.style.backgroundColor = userAvatar;
+                currentAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            } else {
+                currentAvatar.style.backgroundImage = `url(${userAvatar})`;
+                currentAvatar.style.backgroundSize = 'cover';
+                currentAvatar.style.backgroundPosition = 'center';
+                currentAvatar.style.backgroundColor = 'transparent';
+            }
+        }
+
+        defaultLanguage.value = userLanguage;
+        showCharacter.checked = characterEnabled;
+        speechEnabled.checked = speechEnabledValue;
+
+        // Обработчики событий
+        changeAvatarBtn.addEventListener('click', () => {
+            uploadForm.classList.toggle('hidden');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            uploadForm.classList.add('hidden');
+            fileInput.value = '';
+        });
+
+        // Загрузка файла
+        uploadBtn.addEventListener('click', () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    currentAvatar.innerHTML = '';
+                    currentAvatar.style.backgroundImage = `url(${imageUrl})`;
+                    currentAvatar.style.backgroundSize = 'cover';
+                    currentAvatar.style.backgroundPosition = 'center';
+                    currentAvatar.style.backgroundColor = 'transparent';
+                    userAvatar = imageUrl;
+                    uploadForm.classList.add('hidden');
+                }
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Выбор предустановленного аватара
+        presetAvatars.forEach(avatar => {
+            avatar.addEventListener('click', () => {
+                const color = avatar.getAttribute('data-color');
+                currentAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                currentAvatar.style.backgroundImage = '';
+                currentAvatar.style.backgroundColor = color;
+                userAvatar = color;
+            });
+        });
+
+        // Сохранение настроек
+        saveBtn.addEventListener('click', () => {
+            // Сохраняем выбранный аватар
+            if (userAvatar) {
+                localStorage.setItem('qabyldaubot_user_avatar', userAvatar);
+            }
+
+            // Сохраняем выбранный язык
+            localStorage.setItem('qabyldaubot_language', defaultLanguage.value);
+
+            // Сохраняем настройки персонажа
+            localStorage.setItem('qabyldaubot_show_character', showCharacter.checked);
+            localStorage.setItem('qabyldaubot_speech_enabled', speechEnabled.checked);
+
+            // Обновляем настройки в текущем экземпляре чата
+            if (window.QabyldauBot) {
+                if (userAvatar) {
+                    window.QabyldauBot.setUserAvatar(userAvatar);
+                }
+                window.QabyldauBot.currentLanguage = defaultLanguage.value;
+            }
+
+            // Обновляем настройки в системе персонажа
+            if (window.characterIntegration && window.characterIntegration.character) {
+                // Показываем/скрываем персонажа
+                if (showCharacter.checked) {
+                    window.characterIntegration.showCharacter();
+                } else {
+                    window.characterIntegration.hideCharacter();
+                }
+
+                // Включаем/выключаем озвучку
+                window.characterIntegration.updateConfig({
+                    speech: { 
+                        enabled: speechEnabled.checked 
+                    }
+                });
+
+                // Обновляем язык персонажа
+                window.characterIntegration.character.setLanguage(defaultLanguage.value);
+            }
+
+            // Уведомляем пользователя
+            alert('Настройки сохранены успешно!');
+        });
+    });
+</script>
+{% endblock %}
+        // Обработчики событий
+        changeAvatarBtn.addEventListener('click', () => {
+            uploadForm.classList.toggle('hidden');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            uploadForm.classList.add('hidden');
+            fileInput.value = '';
+        });
+
+        // Загрузка файла
+        uploadBtn.addEventListener('click', () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    currentAvatar.innerHTML = '';
+                    currentAvatar.style.backgroundImage = `url(${imageUrl})`;
+                    currentAvatar.style.backgroundSize = 'cover';
+                    currentAvatar.style.backgroundPosition = 'center';
+                    userAvatar = imageUrl;
+                    uploadForm.classList.add('hidden');
+                }
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Выбор предустановленного аватара
+        presetAvatars.forEach((avatar, index) => {
+            const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b'];
+            avatar.style.backgroundColor = colors[index];
+
+            avatar.addEventListener('click', () => {
+                currentAvatar.innerHTML = '';
+                currentAvatar.style.backgroundImage = '';
+                currentAvatar.style.backgroundColor = colors[index];
+                userAvatar = colors[index];
+            });
+        });
+
+        // Сохранение настроек
+        saveBtn.addEventListener('click', () => {
+            // Сохраняем выбранный аватар
+            if (userAvatar) {
+                localStorage.setItem('qabyldaubot_user_avatar', userAvatar);
+            }
+
+            // Сохраняем выбранный язык
+            localStorage.setItem('qabyldaubot_language', defaultLanguage.value);
+
+            // Уведомляем пользователя
+            alert('Настройки сохранены успешно!');
+
+            // Обновляем виджет, если он открыт на странице
+            if (window.chatWidget) {
+                if (userAvatar) {
+                    window.chatWidget.setUserAvatar(userAvatar);
+                }
+                window.chatWidget.currentLanguage = defaultLanguage.value;
+                window.chatWidget.updateLanguage();
+            }
+        });
+    });
+</script>
+{% endblock %}

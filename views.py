@@ -74,6 +74,11 @@ def register_views(app):
         """Standalone widget page for embedding"""
         return render_template('widget.html')
 
+    @app.route('/user-settings')
+    def user_settings():
+        """User settings page for chat customization"""
+        return render_template('user-settings.html')
+
     @app.route('/debug')
     def debug():
         """Debug page for testing chat functionality"""
