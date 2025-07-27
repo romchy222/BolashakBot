@@ -1,19 +1,13 @@
 import os
 import logging
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, session, redirect, url_for, flash, render_template
 from flask_cors import CORS
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from database import db
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
-
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
 
 # create the app
 app = Flask(__name__)
@@ -47,12 +41,8 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 # initialize the app with the extension
 db.init_app(app)
 
-# Import views to register routes
-from views import *
-
-# Authentication routes (must be before blueprint registration)
+# Authentication first, before any other imports
 from auth import check_credentials
-from flask import request, session, redirect, url_for, flash, render_template
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_auth():
@@ -75,7 +65,11 @@ def admin_logout():
     flash('Вы вышли из системы', 'info')
     return redirect('/admin/login')
 
-# Import and register admin blueprint AFTER auth routes
+# Import views to register main routes
+from views import register_views
+register_views(app)
+
+# Import and register admin blueprint AFTER auth routes are defined
 from admin import admin_bp
 app.register_blueprint(admin_bp, url_prefix='/admin')
 

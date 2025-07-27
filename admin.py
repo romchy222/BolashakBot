@@ -1,13 +1,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from models import Category, FAQ, UserQuery, Document, DataSource
+from database import db
 from flask import current_app
-from app import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
 from auth import login_required, check_credentials
 import document_processor
 import web_scraper
 import os
+
+def get_db():
+    """Get database session from current app"""
+    return current_app.extensions['sqlalchemy'].db
 
 admin_bp = Blueprint('admin_panel', __name__)
 
