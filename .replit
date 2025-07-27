@@ -30,7 +30,27 @@ FLASK_APP = "app.py"
 
 [languages.python3]
 pattern = "**/*.py"
+# Конфигурация для Replit
 
+# Команда для запуска проекта
+run = "python app.py"
+
+# Язык проекта
+language = "python3"
+
+# Настройки окружения
+[env]
+PYTHONUTF8 = "1"
+FLASK_APP = "app.py"
+
+# Настройки пакетов
+[packager]
+language = "python3"
+
+[packager.features]
+packageSearch = true
+guessImports = true
+enableReplit = true
 [languages.python3.languageServer]
 start = ["pylsp"]
 

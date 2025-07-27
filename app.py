@@ -111,4 +111,19 @@ with app.app_context():
         logging.info("Initial categories created")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Проверяем, запущены ли мы на Replit
+    if os.environ.get('REPL_ID'):
+        # Автоматически применяем миграции при запуске на Replit
+        try:
+            from setup_db import run_migrations
+            print("Применение миграций базы данных...")
+            run_migrations()
+        except Exception as e:
+            print(f"Предупреждение: не удалось применить миграции: {e}")
+
+        # Используем порт из переменной окружения Replit
+        port = int(os.environ.get('PORT', 8080))
+        app.run(host='0.0.0.0', port=port, debug=os.environ.get('FLASK_ENV') == 'development')
+    else:
+        # Стандартный запуск для локальной разработки
+        app.run(host='0.0.0.0', port=5000, debug=True)

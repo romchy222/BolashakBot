@@ -1,6 +1,7 @@
 """Database migration setup script"""
 
 import os
+import sys
 from flask import Flask
 from flask_migrate import Migrate
 from database import db
@@ -19,14 +20,17 @@ def create_app():
 app = create_app()
 migrate = Migrate(app, db)
 
-# Функция для автоматического запуска миграций на Replit
+# Функция для автоматического запуска миграций
 def run_migrations():
-    """Автоматически применяет миграции для Replit"""
+    """Автоматически применяет миграции"""
     try:
         import flask_migrate
-        import sys
         from flask.cli import with_appcontext
         from flask_migrate import init, migrate, upgrade
+
+        # Проверка наличия переменной окружения DATABASE_URL
+        if 'DATABASE_URL' not in os.environ:
+            print("Предупреждение: DATABASE_URL не установлен, будет использоваться SQLite по умолчанию.")
 
         # Проверяем наличие директории migrations
         if not os.path.exists('migrations'):
@@ -54,15 +58,21 @@ if os.environ.get('REPL_ID'):
     run_migrations()
 
 if __name__ == '__main__':
-    print("Run Flask-Migrate commands with this app context:")
-    print("  flask db init     - Initialize migrations")
-    print("  flask db migrate  - Generate migration")
-    print("  flask db upgrade  - Apply migrations to database")
-    print("\nНа платформе Replit:")
-    print("  Миграции будут запущены автоматически при запуске")
+    # Проверка на аргументы командной строки
+    if len(sys.argv) > 1 and sys.argv[1] == "--run":
+        print("Запуск миграций...")
+        success = run_migrations()
+        if not success:
+            sys.exit(1)
+    else:
+        print("Использование:")
+        print("  python setup_db.py --run      - Запустить миграции")
+        print("  flask db init                - Инициализировать миграции")
+        print("  flask db migrate              - Создать миграцию")
+        print("  flask db upgrade              - Применить миграции")
 
-    # Если выполняется напрямую и не на Replit, предлагаем запустить миграции
-    if not os.environ.get('REPL_ID'):
-        choice = input("\nХотите запустить миграции сейчас? (y/n): ")
-        if choice.lower() == 'y':
-            run_migrations()
+        # Если выполняется напрямую и не на Replit, предлагаем запустить миграции
+        if not os.environ.get('REPL_ID'):
+            choice = input("\nХотите запустить миграции сейчас? (y/n): ")
+            if choice.lower() == 'y':
+                run_migrations()
