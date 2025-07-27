@@ -1,0 +1,63 @@
+/* Стили для чат-виджета */
+
+/* Стили для аватаров */
+.avatar-container {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 2px solid white;
+}
+
+.bot-avatar {
+    background-color: #1e40af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+}
+
+.user-avatar {
+    background-color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+}
+
+.message-container {
+    flex: 1;
+    max-width: calc(100% - 50px);
+}
+
+.bot-message {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    max-width: 100%;
+    position: relative;
+}
+
+.bot-message:after {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 15px;
+    border: 8px solid transparent;
+    border-right-color: white;
+    border-left: 0;
+}
