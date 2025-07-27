@@ -35,7 +35,7 @@ class FAQ(db.Model):
 class UserQuery(db.Model):
     """Model for logging user queries and AI responses"""
     id = db.Column(db.Integer, primary_key=True)
-    user_query = db.Column(db.Text, nullable=False)
+    query_text = db.Column(db.Text, nullable=False)
     bot_response = db.Column(db.Text, nullable=False)
     language = db.Column(db.String(10), default='ru')  # 'ru' or 'kk'
     session_id = db.Column(db.String(100))
@@ -44,7 +44,7 @@ class UserQuery(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __repr__(self):
-        return f'<UserQuery {self.user_query[:50]}...>'
+        return f'<UserQuery {self.query_text[:50]}...>'
 
 class DataSource(db.Model):
     """Model for storing website/social media data sources"""

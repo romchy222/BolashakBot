@@ -41,7 +41,7 @@ def register_views(app):
             
             # Log the query
             user_query = UserQuery(
-                user_query=user_message,
+                query_text=user_message,
                 bot_response=ai_response,
                 language=language,
                 user_ip=request.remote_addr,
