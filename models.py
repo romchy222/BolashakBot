@@ -1,5 +1,6 @@
 from datetime import datetime
 from app import db
+import os
 
 class Category(db.Model):
     """Category model for organizing FAQ items"""
@@ -44,3 +45,35 @@ class UserQuery(db.Model):
     
     def __repr__(self):
         return f'<UserQuery {self.user_question[:50]}...>'
+
+class Document(db.Model):
+    """Model for storing uploaded documents"""
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)
+    original_filename = db.Column(db.String(255), nullable=False)
+    file_type = db.Column(db.String(50), nullable=False)  # 'pdf', 'docx', 'txt', etc.
+    file_size = db.Column(db.Integer)  # File size in bytes
+    file_path = db.Column(db.String(500), nullable=False)  # Path to stored file
+    content_text = db.Column(db.Text)  # Extracted text content
+    description = db.Column(db.Text)  # Admin description of the document
+    is_active = db.Column(db.Boolean, default=True)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    last_processed = db.Column(db.DateTime)
+    
+    def __repr__(self):
+        return f'<Document {self.original_filename}>'
+
+class DataSource(db.Model):
+    """Model for storing website/social media data sources"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)  # User-friendly name
+    url = db.Column(db.String(500), nullable=False)  # Website or social media URL
+    source_type = db.Column(db.String(50), nullable=False)  # 'website', 'vk', 'telegram', etc.
+    is_active = db.Column(db.Boolean, default=True)
+    last_crawled = db.Column(db.DateTime)
+    crawl_frequency = db.Column(db.Integer, default=24)  # Hours between crawls
+    extracted_content = db.Column(db.Text)  # Last extracted content
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<DataSource {self.name}>'

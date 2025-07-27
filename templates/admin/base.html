@@ -18,6 +18,9 @@
             </a>
             
             <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('admin_logout') }}">
+                    <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                </a>
                 <a class="nav-link" href="{{ url_for('index') }}" target="_blank">
                     <i class="fas fa-external-link-alt me-1"></i>Сайт
                 </a>
@@ -32,33 +35,38 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="{{ url_for('admin.index') }}">
+                            <a class="nav-link active" href="{{ url_for('admin_panel.index') }}">
                                 <i class="fas fa-tachometer-alt me-2"></i>Дашборд
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin.categories') }}">
+                            <a class="nav-link" href="{{ url_for('admin_panel.documents') }}">
+                                <i class="fas fa-file-upload me-2"></i>Документы
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin_panel.data_sources') }}">
+                                <i class="fas fa-globe me-2"></i>Источники данных
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin_panel.categories') }}">
                                 <i class="fas fa-tags me-2"></i>Категории
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin.faqs') }}">
+                            <a class="nav-link" href="{{ url_for('admin_panel.faqs') }}">
                                 <i class="fas fa-question-circle me-2"></i>FAQ
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin.queries') }}">
+                            <a class="nav-link" href="{{ url_for('admin_panel.queries') }}">
                                 <i class="fas fa-comments me-2"></i>Запросы пользователей
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin.analytics') }}">
+                            <a class="nav-link" href="{{ url_for('admin_panel.analytics') }}">
                                 <i class="fas fa-chart-bar me-2"></i>Аналитика
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('admin.scrape_university') }}">
-                                <i class="fas fa-globe me-2"></i>Парсинг сайта
                             </a>
                         </li>
                     </ul>

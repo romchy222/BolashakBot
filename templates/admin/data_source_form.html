@@ -1,0 +1,117 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Добавить источник данных</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin_panel.data_sources') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">Настройка нового источника данных</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Название источника</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               placeholder="Например: Официальный сайт университета" required>
+                        <div class="form-text">
+                            Удобное название для идентификации источника в админ панели.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="url" class="form-label">URL адрес</label>
+                        <input type="url" class="form-control" id="url" name="url" 
+                               placeholder="https://example.com" required>
+                        <div class="form-text">
+                            Полный URL адрес сайта или страницы в социальной сети.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="source_type" class="form-label">Тип источника</label>
+                        <select class="form-select" id="source_type" name="source_type" required>
+                            <option value="">Выберите тип источника</option>
+                            <option value="website">Веб-сайт</option>
+                            <option value="vk">Сообщество ВКонтакте</option>
+                            <option value="telegram">Telegram канал</option>
+                            <option value="other">Другое</option>
+                        </select>
+                        <div class="form-text">
+                            Тип источника определяет способ извлечения данных.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="crawl_frequency" class="form-label">Частота обновления (часы)</label>
+                        <select class="form-select" id="crawl_frequency" name="crawl_frequency">
+                            <option value="6">Каждые 6 часов</option>
+                            <option value="12">Каждые 12 часов</option>
+                            <option value="24" selected>Каждые 24 часа (рекомендуется)</option>
+                            <option value="48">Каждые 48 часов</option>
+                            <option value="168">Раз в неделю</option>
+                        </select>
+                        <div class="form-text">
+                            Как часто система будет проверять обновления на источнике.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Добавить источник и выполнить первичный анализ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">Информация</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="fas fa-lightbulb text-warning me-2"></i>Как это работает?</h6>
+                    <p class="small text-muted">
+                        Система автоматически анализирует контент с указанных источников и извлекает полезную информацию 
+                        для ответов ИИ-ассистента. Данные обновляются согласно установленной частоте.
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-globe text-primary me-2"></i>Поддерживаемые источники:</h6>
+                    <ul class="small text-muted">
+                        <li><strong>Веб-сайты:</strong> Автоматическое извлечение текста со страниц</li>
+                        <li><strong>ВКонтакте:</strong> Анализ постов в сообществах</li>
+                        <li><strong>Telegram:</strong> Мониторинг каналов</li>
+                        <li><strong>Другие:</strong> Базовое извлечение контента</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-sync-alt text-success me-2"></i>Автообновление:</h6>
+                    <p class="small text-muted">
+                        База знаний ИИ будет автоматически обновляться при изменении контента на источниках. 
+                        Это обеспечивает актуальность ответов бота.
+                    </p>
+                </div>
+                
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Важно:</strong> Убедитесь, что у вас есть права на использование контента с указанных источников.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

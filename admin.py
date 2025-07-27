@@ -1,33 +1,46 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from models import Category, FAQ, UserQuery
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
+from models import Category, FAQ, UserQuery, Document, DataSource
 from flask import current_app
 from app import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
+from auth import login_required, check_credentials
+import document_processor
+import web_scraper
+import os
 
 admin_bp = Blueprint('admin_panel', __name__)
 
 @admin_bp.route('/')
+@login_required
 def index():
     """Admin dashboard"""
     total_queries = UserQuery.query.count()
     total_faqs = FAQ.query.count()
     total_categories = Category.query.count()
+    total_documents = Document.query.filter_by(is_active=True).count()
+    total_sources = DataSource.query.filter_by(is_active=True).count()
     recent_queries = UserQuery.query.order_by(UserQuery.created_at.desc()).limit(10).all()
+    recent_documents = Document.query.filter_by(is_active=True).order_by(Document.upload_date.desc()).limit(5).all()
     
     return render_template('admin/index.html', 
                          total_queries=total_queries,
                          total_faqs=total_faqs,
                          total_categories=total_categories,
-                         recent_queries=recent_queries)
+                         total_documents=total_documents,
+                         total_sources=total_sources,
+                         recent_queries=recent_queries,
+                         recent_documents=recent_documents)
 
 @admin_bp.route('/categories')
+@login_required
 def categories():
     """List all categories"""
     categories = Category.query.all()
     return render_template('admin/category_list.html', categories=categories)
 
 @admin_bp.route('/categories/new', methods=['GET', 'POST'])
+@login_required
 def new_category():
     """Create new category"""
     if request.method == 'POST':
@@ -44,6 +57,7 @@ def new_category():
     return render_template('admin/category_form.html')
 
 @admin_bp.route('/faqs')
+@login_required
 def faqs():
     """List all FAQs"""
     page = request.args.get('page', 1, type=int)
@@ -52,6 +66,7 @@ def faqs():
     return render_template('admin/faq_list.html', faqs=faqs)
 
 @admin_bp.route('/faqs/new', methods=['GET', 'POST'])
+@login_required
 def new_faq():
     """Create new FAQ"""
     if request.method == 'POST':
@@ -65,12 +80,13 @@ def new_faq():
         db.session.add(faq)
         db.session.commit()
         flash('FAQ успешно создан', 'success')
-        return redirect(url_for('admin.faqs'))
+        return redirect(url_for('admin_panel.faqs'))
     
     categories = Category.query.all()
     return render_template('admin/faq_form.html', categories=categories)
 
 @admin_bp.route('/faqs/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_faq(id):
     """Edit FAQ"""
     faq = FAQ.query.get_or_404(id)
@@ -85,12 +101,13 @@ def edit_faq(id):
         
         db.session.commit()
         flash('FAQ успешно обновлен', 'success')
-        return redirect(url_for('admin.faqs'))
+        return redirect(url_for('admin_panel.faqs'))
     
     categories = Category.query.all()
     return render_template('admin/faq_form.html', faq=faq, categories=categories)
 
 @admin_bp.route('/queries')
+@login_required
 def queries():
     """List user queries"""
     page = request.args.get('page', 1, type=int)
@@ -99,6 +116,7 @@ def queries():
     return render_template('admin/query_list.html', queries=queries)
 
 @admin_bp.route('/analytics')
+@login_required
 def analytics():
     """Analytics dashboard"""
     today = datetime.utcnow().date()
@@ -171,16 +189,163 @@ def analytics():
                          popular_categories=popular_categories)
 
 @admin_bp.route('/scrape-university', methods=['GET', 'POST'])
+@login_required
 def scrape_university():
-    """Парсинг сайта университета"""
+    """Парсинг сайта университета - DEPRECATED, use data sources instead"""
+    flash('Данная функция заменена на "Источники данных". Используйте новый раздел для добавления сайтов.', 'info')
+    return redirect(url_for('admin_panel.data_sources'))
+
+# New Document Management Routes
+@admin_bp.route('/documents')
+@login_required
+def documents():
+    """List all uploaded documents"""
+    page = request.args.get('page', 1, type=int)
+    documents = Document.query.filter_by(is_active=True).order_by(Document.upload_date.desc()).paginate(
+        page=page, per_page=20, error_out=False)
+    return render_template('admin/document_list.html', documents=documents)
+
+@admin_bp.route('/documents/upload', methods=['GET', 'POST'])
+@login_required
+def upload_document():
+    """Upload new document"""
     if request.method == 'POST':
         try:
-            from web_scraper import run_university_scraper
-            saved_count = run_university_scraper()
-            flash(f'Успешно создано {saved_count} FAQ записей из данных сайта университета', 'success')
+            # Check if file was uploaded
+            if 'file' not in request.files:
+                flash('Файл не выбран', 'error')
+                return redirect(request.url)
+            
+            file = request.files['file']
+            if file.filename == '':
+                flash('Файл не выбран', 'error')
+                return redirect(request.url)
+            
+            # Save file
+            file_info = document_processor.save_uploaded_file(file)
+            if not file_info:
+                flash('Ошибка при сохранении файла', 'error')
+                return redirect(request.url)
+            
+            # Extract text content
+            content_text = document_processor.extract_text_from_file(
+                file_info['file_path'], file_info['file_type'])
+            content_text = document_processor.clean_extracted_text(content_text)
+            
+            # Create document record
+            document = Document()
+            document.filename = file_info['filename']
+            document.original_filename = file_info['original_filename']
+            document.file_type = file_info['file_type']
+            document.file_size = file_info['file_size']
+            document.file_path = file_info['file_path']
+            document.content_text = content_text
+            document.description = request.form.get('description', '')
+            document.last_processed = datetime.utcnow()
+            
+            db.session.add(document)
+            db.session.commit()
+            
+            flash(f'Документ "{file_info["original_filename"]}" успешно загружен и обработан', 'success')
+            return redirect(url_for('admin_panel.documents'))
+            
         except Exception as e:
-            flash(f'Ошибка при парсинге сайта: {str(e)}', 'error')
-        
-        return redirect(url_for('admin.scrape_university'))
+            flash(f'Ошибка при загрузке документа: {str(e)}', 'error')
+            return redirect(request.url)
     
-    return render_template('admin/scrape_university.html')
+    return render_template('admin/document_upload.html')
+
+@admin_bp.route('/documents/<int:id>')
+@login_required
+def view_document(id):
+    """View document details"""
+    document = Document.query.get_or_404(id)
+    return render_template('admin/document_view.html', document=document)
+
+@admin_bp.route('/documents/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_document(id):
+    """Delete document"""
+    document = Document.query.get_or_404(id)
+    
+    # Delete file from disk
+    document_processor.delete_file(document.file_path)
+    
+    # Delete from database
+    db.session.delete(document)
+    db.session.commit()
+    
+    flash(f'Документ "{document.original_filename}" удален', 'success')
+    return redirect(url_for('admin_panel.documents'))
+
+# Data Sources Management Routes
+@admin_bp.route('/data-sources')
+@login_required
+def data_sources():
+    """List all data sources"""
+    sources = DataSource.query.order_by(DataSource.created_at.desc()).all()
+    return render_template('admin/data_source_list.html', sources=sources)
+
+@admin_bp.route('/data-sources/new', methods=['GET', 'POST'])
+@login_required
+def new_data_source():
+    """Create new data source"""
+    if request.method == 'POST':
+        try:
+            source = DataSource()
+            source.name = request.form['name']
+            source.url = request.form['url']
+            source.source_type = request.form['source_type']
+            source.crawl_frequency = int(request.form.get('crawl_frequency', 24))
+            
+            # Perform initial crawl
+            if source.source_type == 'website':
+                scraper = web_scraper.UniversityScraper(source.url)
+                content = scraper.get_website_text_content(source.url)
+                source.extracted_content = content
+                source.last_crawled = datetime.utcnow()
+            
+            db.session.add(source)
+            db.session.commit()
+            
+            flash(f'Источник данных "{source.name}" создан', 'success')
+            return redirect(url_for('admin_panel.data_sources'))
+            
+        except Exception as e:
+            flash(f'Ошибка при создании источника данных: {str(e)}', 'error')
+    
+    return render_template('admin/data_source_form.html')
+
+@admin_bp.route('/data-sources/<int:id>/crawl', methods=['POST'])
+@login_required
+def crawl_data_source(id):
+    """Manually crawl data source"""
+    source = DataSource.query.get_or_404(id)
+    
+    try:
+        if source.source_type == 'website':
+            scraper = web_scraper.UniversityScraper(source.url)
+            content = scraper.get_website_text_content(source.url)
+            source.extracted_content = content
+            source.last_crawled = datetime.utcnow()
+            db.session.commit()
+            
+            flash(f'Источник "{source.name}" успешно обновлен', 'success')
+        else:
+            flash('Автоматическое обновление поддерживается только для веб-сайтов', 'info')
+            
+    except Exception as e:
+        flash(f'Ошибка при обновлении источника: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_panel.data_sources'))
+
+@admin_bp.route('/data-sources/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_data_source(id):
+    """Delete data source"""
+    source = DataSource.query.get_or_404(id)
+    db.session.delete(source)
+    db.session.commit()
+    
+    flash(f'Источник данных "{source.name}" удален', 'success')
+    return redirect(url_for('admin_panel.data_sources'))

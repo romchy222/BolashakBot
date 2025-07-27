@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Загрузка документа</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin_panel.documents') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">Загрузить новый документ</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Выберите файл</label>
+                        <input type="file" class="form-control" id="file" name="file" 
+                               accept=".txt,.pdf,.doc,.docx,.rtf,.odt" required>
+                        <div class="form-text">
+                            Поддерживаемые форматы: TXT, PDF, DOC, DOCX, RTF, ODT. Максимальный размер: 16 МБ.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание документа</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="Краткое описание содержимого документа (например: 'Правила приема 2024', 'Расписание занятий', 'Программа обучения по ИТ')"></textarea>
+                        <div class="form-text">
+                            Это поможет ИИ-ассистенту лучше понимать, когда использовать информацию из этого документа.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-upload me-2"></i>Загрузить и обработать документ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">Информация</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="fas fa-lightbulb text-warning me-2"></i>Как это работает?</h6>
+                    <p class="small text-muted">
+                        После загрузки документа система автоматически извлечет из него текст и добавит в базу знаний ИИ-ассистента. 
+                        Это позволит боту отвечать на вопросы студентов, используя информацию из ваших документов.
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-file-alt text-primary me-2"></i>Рекомендуемый контент:</h6>
+                    <ul class="small text-muted">
+                        <li>Правила приёма и поступления</li>
+                        <li>Расписание занятий и экзаменов</li>
+                        <li>Программы обучения и курсы</li>
+                        <li>Требования к документам</li>
+                        <li>Контактная информация</li>
+                        <li>Часто задаваемые вопросы</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Важно:</strong> Убедитесь, что документы содержат актуальную информацию и не содержат конфиденциальных данных.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
