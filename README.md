@@ -1,164 +1,164 @@
-# QabyldauBot - University Admission Assistant
+# QabyldauBot - Ассистент по вопросам поступления в университет
 
-## Overview
+## Обзор
 
-QabyldauBot is a Flask-based web application that serves as an AI-powered chatbot assistant for prospective students of Kyzylorda University "Bolashak". The system provides multilingual support (Russian and Kazakh) and helps answer questions about university admission, programs, documents, and schedules.
+QabyldauBot - это веб-приложение на базе Flask, выполняющее функцию чат-бота с искусственным интеллектом для абитуриентов Кызылординского университета «Болашак». Система поддерживает два языка (русский и казахский) и помогает отвечать на вопросы о поступлении в университет, программах обучения, документах и расписаниях.
 
-## User Preferences
+## Пользовательские предпочтения
 
-Preferred communication style: Simple, everyday language.
+Предпочтительный стиль общения: простой, повседневный язык.
 
-## System Architecture
+## Архитектура системы
 
-### Backend Architecture
-- **Framework**: Flask web framework with Blueprint-based modular structure
-- **Database**: SQLAlchemy ORM with SQLite as default (configurable via DATABASE_URL environment variable)
-- **AI Integration**: Mistral AI API for natural language processing and response generation
-- **Session Management**: Flask sessions with configurable secret keys
-- **Middleware**: ProxyFix for handling reverse proxy headers
+### Архитектура серверной части
+- **Фреймворк**: Веб-фреймворк Flask с модульной структурой на основе Blueprint
+- **База данных**: SQLAlchemy ORM с SQLite по умолчанию (настраивается через переменную окружения DATABASE_URL)
+- **Интеграция с ИИ**: Mistral AI API для обработки естественного языка и генерации ответов
+- **Управление сессиями**: Сессии Flask с настраиваемыми секретными ключами
+- **Middleware**: ProxyFix для обработки заголовков обратного прокси
 
-### Frontend Architecture
-- **Template Engine**: Jinja2 templates with inheritance-based layout system
-- **CSS Framework**: Tailwind CSS for responsive design
-- **JavaScript**: Vanilla JavaScript for chat widget functionality
-- **UI Components**: Custom chat widget with real-time messaging interface
+### Архитектура клиентской части
+- **Шаблонизатор**: Шаблоны Jinja2 с системой макетов на основе наследования
+- **CSS-фреймворк**: Tailwind CSS для адаптивного дизайна
+- **JavaScript**: Vanilla JavaScript для функциональности чат-виджета
+- **UI-компоненты**: Пользовательский чат-виджет с интерфейсом обмена сообщениями в реальном времени
 
-### Database Schema
-The application uses three main database models:
-- **Category**: Organizes FAQ items with multilingual name and description fields
-- **FAQ**: Stores questions and answers in both Russian and Kazakh languages
-- **UserQuery**: Logs all user interactions, AI responses, and performance metrics
+### Схема базы данных
+Приложение использует три основные модели базы данных:
+- **Category**: Организует элементы FAQ с многоязычными полями имени и описания
+- **FAQ**: Хранит вопросы и ответы на русском и казахском языках
+- **UserQuery**: Логирует все взаимодействия с пользователями, ответы ИИ и показатели производительности
 
-## Key Components
+## Ключевые компоненты
 
-### Core Application (app.py)
-- Flask application factory pattern with SQLAlchemy integration
-- Database configuration with connection pooling and health checks
-- Blueprint registration for modular route organization
-- Automatic database initialization with default data seeding
+### Основное приложение (app.py)
+- Шаблон фабрики приложений Flask с интеграцией SQLAlchemy
+- Конфигурация базы данных с пулом соединений и проверками работоспособности
+- Регистрация Blueprint для модульной организации маршрутов
+- Автоматическая инициализация базы данных с заполнением данными по умолчанию
 
-### Chat System (views.py + mistral_client.py)
-- RESTful API endpoint for chat interactions
-- Context-aware AI responses using FAQ database as knowledge base
-- Performance logging and user interaction tracking
-- Language-specific system prompts for Mistral AI
+### Система чата (views.py + mistral_client.py)
+- Конечная точка RESTful API для взаимодействия с чатом
+- Контекстно-зависимые ответы ИИ с использованием базы данных FAQ в качестве базы знаний
+- Логирование производительности и отслеживание взаимодействий с пользователями
+- Системные подсказки на разных языках для Mistral AI
 
-### Admin Panel (admin.py)
-- Dashboard with system statistics and recent activity monitoring
-- Category management for organizing FAQ content
-- FAQ content management with pagination
-- User query analytics and response time monitoring
+### Панель администратора (admin.py)
+- Панель мониторинга со статистикой системы и отслеживанием последних действий
+- Управление категориями для организации содержимого FAQ
+- Управление содержимым FAQ с пагинацией
+- Аналитика запросов пользователей и мониторинг времени отклика
 
-### Chat Widget (static/js/chat-widget.js)
-- Interactive chat interface with typing indicators
-- Language switching between Russian and Kazakh
-- Message history management
-- Responsive design with animation effects
+### Чат-виджет (static/js/chat-widget.js)
+- Интерактивный интерфейс чата с индикаторами набора текста
+- Переключение языков между русским и казахским
+- Управление историей сообщений
+- Адаптивный дизайн с анимационными эффектами
 
-## Data Flow
+## Поток данных
 
-1. **User Interaction**: Users interact through the chat widget on the main page
-2. **API Processing**: Chat messages are sent to `/api/chat` endpoint
-3. **Context Retrieval**: System queries FAQ database for relevant context
-4. **AI Processing**: Mistral AI generates responses using context and language-specific prompts
-5. **Response Delivery**: AI response is returned to user and logged in database
-6. **Analytics**: All interactions are stored for admin review and system improvement
+1. **Взаимодействие с пользователем**: Пользователи взаимодействуют через чат-виджет на главной странице
+2. **Обработка API**: Сообщения чата отправляются на конечную точку `/api/chat`
+3. **Получение контекста**: Система запрашивает базу данных FAQ для получения релевантного контекста
+4. **Обработка ИИ**: Mistral AI генерирует ответы, используя контекст и языковые подсказки
+5. **Доставка ответа**: Ответ ИИ возвращается пользователю и логируется в базе данных
+6. **Аналитика**: Все взаимодействия сохраняются для анализа администратором и улучшения системы
 
-## External Dependencies
+## Внешние зависимости
 
-### AI Service Integration
-- **Mistral AI API**: Primary language model for generating responses
-- **API Key Management**: Environment-based configuration for secure API access
-- **Response Optimization**: Context injection from local FAQ database
+### Интеграция с сервисом ИИ
+- **Mistral AI API**: Основная языковая модель для генерации ответов
+- **Управление API-ключами**: Конфигурация на основе переменных окружения для безопасного доступа к API
+- **Оптимизация ответов**: Внедрение контекста из локальной базы данных FAQ
 
-### Frontend Libraries
-- **Tailwind CSS**: Utility-first CSS framework via CDN
-- **Font Awesome**: Icon library for UI components
-- **Bootstrap**: Admin panel styling framework
+### Библиотеки фронтенда
+- **Tailwind CSS**: CSS-фреймворк с подходом «utility-first» через CDN
+- **Font Awesome**: Библиотека иконок для компонентов пользовательского интерфейса
+- **Bootstrap**: Фреймворк для стилизации панели администратора
 
-### Database Configuration
-- **SQLite**: Default development database
-- **PostgreSQL**: Recommended for production (via DATABASE_URL environment variable)
-- **Connection Pooling**: Configured for optimal performance and reliability
+### Конфигурация базы данных
+- **SQLite**: База данных по умолчанию для разработки
+- **PostgreSQL**: Рекомендуется для производственной среды (через переменную окружения DATABASE_URL)
+- **Пул соединений**: Настроен для оптимальной производительности и надежности
 
-## Deployment Strategy
+## Стратегия развертывания
 
-### Environment Configuration
-- **Development**: SQLite database with debug mode enabled
-- **Production**: Environment variables for database URL and API keys
-- **Security**: Configurable session secrets and proxy handling
+### Конфигурация окружения
+- **Разработка**: База данных SQLite с включенным режимом отладки
+- **Производственная среда**: Переменные окружения для URL базы данных и API-ключей
+- **Безопасность**: Настраиваемые секреты сессий и обработка прокси
 
-### Application Structure
-- **Modular Design**: Blueprint-based routing for maintainability
-- **Static Assets**: Organized CSS and JavaScript files
-- **Template Hierarchy**: Base templates with content blocks for consistency
+### Структура приложения
+- **Модульный дизайн**: Маршрутизация на основе Blueprint для удобства сопровождения
+- **Статические ресурсы**: Организованные файлы CSS и JavaScript
+- **Иерархия шаблонов**: Базовые шаблоны с блоками содержимого для обеспечения единообразия
 
-### Performance Considerations
-- **Database Optimization**: Connection pooling and pre-ping health checks
-- **Response Time Tracking**: Built-in performance monitoring
-- **Caching Strategy**: FAQ context retrieval optimization for AI responses
+### Соображения производительности
+- **Оптимизация базы данных**: Пул соединений и проверки работоспособности pre-ping
+- **Отслеживание времени отклика**: Встроенный мониторинг производительности
+- **Стратегия кэширования**: Оптимизация получения контекста FAQ для ответов ИИ
 
-The application follows a traditional MVC pattern with clear separation of concerns, making it maintainable and scalable for university admission support scenarios.
+Приложение следует традиционному паттерну MVC с четким разделением функций, что делает его удобным для сопровождения и масштабируемым для сценариев поддержки поступления в университет.
 
-## Compliance with Technical Specifications
+## Соответствие техническим спецификациям
 
-### ✅ Fully Implemented Requirements
-- **24/7 Automated Consultations**: Complete bilingual chatbot system operational
-- **Intelligent AI Integration**: Mistral AI with contextual responses from FAQ database  
-- **Real-time Information Delivery**: Average response time 2-3 seconds
-- **Infrastructure for 40% Staff Reduction**: Analytics dashboard and query logging system
-- **Pilot Launch Ready**: All technical components developed and tested
+### ✅ Полностью реализованные требования
+- **Автоматизированные консультации 24/7**: Полностью функциональная двуязычная система чат-бота
+- **Интеллектуальная интеграция с ИИ**: Mistral AI с контекстными ответами из базы данных FAQ  
+- **Доставка информации в реальном времени**: Среднее время отклика 2-3 секунды
+- **Инфраструктура для сокращения персонала на 40%**: Панель аналитики и система логирования запросов
+- **Готовность к пилотному запуску**: Все технические компоненты разработаны и протестированы
 
-### 📊 Performance Metrics & KPI Tracking
-- **Analytics Dashboard**: Real-time monitoring at `/admin/analytics`
-- **User Query Logging**: Complete interaction history with performance metrics
-- **Language Distribution**: Automatic tracking of Russian/Kazakh usage
-- **Response Time Monitoring**: Built-in performance measurement
-- **Popular Categories Analysis**: Data-driven insights for FAQ optimization
+### 📊 Показатели производительности и отслеживание KPI
+- **Аналитическая панель**: Мониторинг в реальном времени по адресу `/admin/analytics`
+- **Логирование запросов пользователей**: Полная история взаимодействий с показателями производительности
+- **Распределение языков**: Автоматическое отслеживание использования русского/казахского языков
+- **Мониторинг времени отклика**: Встроенное измерение производительности
+- **Анализ популярных категорий**: Инсайты на основе данных для оптимизации FAQ
 
-### 🎯 Target Achievement Capability
-- **100% Prospective Student Coverage**: Widget ready for university website integration
-- **40% Staff Workload Reduction**: Automated responses to common inquiries
-- **25% Service Quality Improvement**: Standardized, accurate information delivery
-- **Social Impact**: Enhanced educational accessibility through bilingual support
+### 🎯 Возможности достижения целей
+- **100% охват потенциальных студентов**: Виджет готов к интеграции с сайтом университета
+- **Сокращение рабочей нагрузки персонала на 40%**: Автоматизированные ответы на общие запросы
+- **Повышение качества обслуживания на 25%**: Стандартизированная, точная доставка информации
+- **Социальное влияние**: Улучшенная доступность образования благодаря двуязычной поддержке
 
-### 🚀 Deployment Readiness
-- **Production Environment**: PostgreSQL database, Gunicorn WSGI server
-- **Security Implementation**: HTTPS ready, session management, API rate limiting
-- **Scalability**: Connection pooling, efficient database queries
-- **Integration Ready**: CORS configuration for university website embedding
+### 🚀 Готовность к развертыванию
+- **Производственная среда**: База данных PostgreSQL, WSGI-сервер Gunicorn
+- **Реализация безопасности**: Готовность к HTTPS, управление сессиями, ограничение скорости API
+- **Масштабируемость**: Пул соединений, эффективные запросы к базе данных
+- **Готовность к интеграции**: Конфигурация CORS для встраивания на сайт университета
 
-## Integration Guide
+## Руководство по интеграции
 
-The QabyldauBot widget can be integrated into the university website in multiple ways:
+Виджет QabyldauBot может быть интегрирован на сайт университета несколькими способами:
 
-### Integration Methods
-1. **iframe Integration**: Simple embedding using iframe for quick deployment
-2. **Direct JavaScript Integration**: Full control with custom styling and positioning
-3. **Standalone Widget Page**: Dedicated demo page at `/widget` for testing
+### Методы интеграции
+1. **Интеграция через iframe**: Простое встраивание с помощью iframe для быстрого развертывания
+2. **Прямая интеграция JavaScript**: Полный контроль с пользовательскими стилями и позиционированием
+3. **Автономная страница виджета**: Специальная демонстрационная страница по адресу `/widget` для тестирования
 
-### Key Integration Features
-- **Cross-domain Support**: Widget works across different domains with proper CORS configuration
-- **Responsive Design**: Adapts to mobile and desktop environments
-- **Language Support**: Maintains Russian/Kazakh bilingual functionality when embedded
-- **Custom Styling**: University branding colors and logos can be customized
+### Ключевые функции интеграции
+- **Поддержка кросс-доменности**: Виджет работает на разных доменах с правильной конфигурацией CORS
+- **Адаптивный дизайн**: Адаптируется к мобильным и настольным средам
+- **Поддержка языков**: Сохраняет двуязычную функциональность (русский/казахский) при встраивании
+- **Пользовательское оформление**: Можно настроить цвета и логотипы в соответствии с брендом университета
 
-### API Endpoints for Integration
-- `/api/chat` - Main chat API endpoint for external sites
-- `/widget` - Standalone widget demonstration page
-- `/admin` - Administrative interface for FAQ management
+### Конечные точки API для интеграции
+- `/api/chat` - Основная конечная точка API чата для внешних сайтов
+- `/widget` - Демонстрационная страница автономного виджета
+- `/admin` - Административный интерфейс для управления FAQ
 
-### Recent Updates (2025-07-25)
-- ✓ Created comprehensive integration guide (integration_guide.md)
-- ✓ Added standalone widget demo page 
-- ✓ Successfully configured Mistral AI API integration
-- ✓ Tested bilingual chat functionality (Russian/Kazakh)
-- ✓ Verified PostgreSQL database connectivity
-- ✓ Added technical requirements analysis for full ТЗ compliance
-- ✓ Implemented analytics dashboard with KPI tracking
-- ✓ Created deployment plan for pilot and full launch phases
-- ✓ Added comprehensive admin forms for category and FAQ management
-- ✓ System ready for production deployment and 40% staff workload reduction
-- ✓ Added university website scraper for automated knowledge base updates
-- ✓ Enhanced AI responses system with NO LINKS policy - structured answers only
-- ✓ Created admin interface for website content analysis and FAQ generation
+### Последние обновления (25.07.2025)
+- ✓ Создано комплексное руководство по интеграции (integration_guide.md)
+- ✓ Добавлена демонстрационная страница автономного виджета 
+- ✓ Успешно настроена интеграция Mistral AI API
+- ✓ Протестирована двуязычная функциональность чата (русский/казахский)
+- ✓ Проверено подключение к базе данных PostgreSQL
+- ✓ Добавлен анализ технических требований для полного соответствия ТЗ
+- ✓ Реализована панель аналитики с отслеживанием KPI
+- ✓ Создан план развертывания для пилотной и полной фаз запуска
+- ✓ Добавлены комплексные административные формы для управления категориями и FAQ
+- ✓ Система готова к производственному развертыванию и сокращению рабочей нагрузки персонала на 40%
+- ✓ Добавлен скрапер веб-сайта университета для автоматического обновления базы знаний
+- ✓ Улучшена система ответов ИИ с политикой БЕЗ ССЫЛОК - только структурированные ответы
+- ✓ Создан административный интерфейс для анализа содержимого веб-сайта и генерации FAQ

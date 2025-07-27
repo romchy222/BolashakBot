@@ -1,17 +1,27 @@
 import os
 import logging
+import secrets
+from dotenv import load_dotenv
 
 from flask import Flask, request, session, redirect, url_for, flash, render_template
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 from database import db
 
+# Load environment variables from .env file if it exists
+load_dotenv()
+
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG if os.environ.get('FLASK_ENV') == 'development' else logging.INFO)
 
 # create the app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
+
+# Secure secret key generation - ensure a new one is generated if not set in environment
+if not os.environ.get("SESSION_SECRET") and app.config['ENV'] == 'production':
+    logging.warning("SESSION_SECRET not set in production environment!")
+
+app.secret_key = os.environ.get("SESSION_SECRET", secrets.token_hex(32))
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure CORS

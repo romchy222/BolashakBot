@@ -89,16 +89,32 @@ def extract_text_from_txt(file_path):
         return "Unable to decode file content"
 
 def extract_text_from_pdf(file_path):
-    """Extract text from PDF file - placeholder implementation"""
-    # This would require PyPDF2 or similar library
-    # For now, return a placeholder
-    return "PDF text extraction requires additional libraries (PyPDF2). Placeholder content extracted."
+    """Extract text from PDF file using PyPDF2"""
+    try:
+        from PyPDF2 import PdfReader
+        reader = PdfReader(file_path)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() + "\n"
+        return text
+    except ImportError:
+        return "Error: PyPDF2 library not installed. Run 'pip install PyPDF2'"
+    except Exception as e:
+        return f"Error extracting PDF text: {str(e)}"
 
 def extract_text_from_docx(file_path):
-    """Extract text from DOCX file - placeholder implementation"""
-    # This would require python-docx library
-    # For now, return a placeholder
-    return "DOCX text extraction requires additional libraries (python-docx). Placeholder content extracted."
+    """Extract text from DOCX file using python-docx"""
+    try:
+        import docx
+        doc = docx.Document(file_path)
+        text = []
+        for paragraph in doc.paragraphs:
+            text.append(paragraph.text)
+        return '\n'.join(text)
+    except ImportError:
+        return "Error: python-docx library not installed. Run 'pip install python-docx'"
+    except Exception as e:
+        return f"Error extracting DOCX text: {str(e)}"
 
 def clean_extracted_text(text):
     """Clean and normalize extracted text"""
