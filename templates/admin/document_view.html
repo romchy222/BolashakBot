@@ -1,0 +1,111 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Просмотр документа</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin_panel.documents') }}" class="btn btn-secondary me-2">
+            <i class="fas fa-arrow-left me-2"></i>Назад к списку
+        </a>
+        <form style="display: inline;" method="POST" action="{{ url_for('admin_panel.delete_document', id=document.id) }}" 
+              onsubmit="return confirm('Вы уверены, что хотите удалить этот документ?')">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>Удалить
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Извлеченный текст</h6>
+            </div>
+            <div class="card-body">
+                {% if document.content_text %}
+                    <div style="max-height: 600px; overflow-y: auto; background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                        <pre style="white-space: pre-wrap; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px;">{{ document.content_text }}</pre>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Символов: {{ document.content_text|length }} | 
+                            Слов: {{ document.content_text.split()|length }}
+                        </small>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Текст не был извлечен из документа или документ пуст.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">Информация о документе</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm">
+                    <tr>
+                        <td><strong>Имя файла:</strong></td>
+                        <td>{{ document.original_filename }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Тип файла:</strong></td>
+                        <td>
+                            <span class="badge bg-secondary">{{ document.file_type.upper() }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Размер:</strong></td>
+                        <td>{{ "%.1f"|format(document.file_size / 1024) }} KB</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Загружен:</strong></td>
+                        <td>{{ document.upload_date.strftime('%d.%m.%Y %H:%M') }}</td>
+                    </tr>
+                    {% if document.last_processed %}
+                    <tr>
+                        <td><strong>Обработан:</strong></td>
+                        <td>{{ document.last_processed.strftime('%d.%m.%Y %H:%M') }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td><strong>Статус:</strong></td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if document.is_active else 'danger' }}">
+                                {{ 'Активен' if document.is_active else 'Неактивен' }}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                
+                {% if document.description %}
+                <div class="mt-3">
+                    <h6>Описание:</h6>
+                    <p class="small text-muted">{{ document.description }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <h6>Использование в ИИ:</h6>
+                    <p class="small text-muted">
+                        {% if document.content_text %}
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            Этот документ доступен для использования ИИ-ассистентом при ответах на вопросы пользователей.
+                        {% else %}
+                            <i class="fas fa-exclamation-circle text-warning me-1"></i>
+                            Документ не может быть использован ИИ из-за отсутствия извлеченного текста.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

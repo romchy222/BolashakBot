@@ -31,12 +31,12 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            FAQ записей
+                            Документов
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_faqs }}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_documents }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-question-circle fa-2x text-gray-300"></i>
+                        <i class="fas fa-file-upload fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -49,12 +49,30 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Категорий
+                            Источников данных
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_categories }}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_sources }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-tags fa-2x text-gray-300"></i>
+                        <i class="fas fa-globe fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            FAQ записей
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_faqs }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-question-circle fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -62,42 +80,88 @@
     </div>
 </div>
 
-<!-- Recent Queries -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Последние запросы пользователей</h6>
-    </div>
-    <div class="card-body">
-        {% if recent_queries %}
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Язык</th>
-                            <th>Вопрос</th>
-                            <th>Время ответа</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for query in recent_queries %}
-                        <tr>
-                            <td>{{ query.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
-                            <td>
-                                <span class="badge bg-{{ 'primary' if query.language == 'ru' else 'success' }}">
-                                    {{ 'Русский' if query.language == 'ru' else 'Қазақша' }}
-                                </span>
-                            </td>
-                            <td>{{ query.user_question[:80] }}{% if query.user_question|length > 80 %}...{% endif %}</td>
-                            <td>{{ "%.2f"|format(query.response_time) }}с</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="row">
+    <!-- Recent Queries -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Последние запросы пользователей</h6>
             </div>
-        {% else %}
-            <p class="text-muted">Пока нет запросов от пользователей.</p>
-        {% endif %}
+            <div class="card-body">
+                {% if recent_queries %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Язык</th>
+                                    <th>Вопрос</th>
+                                    <th>Время ответа</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for query in recent_queries %}
+                                <tr>
+                                    <td>{{ query.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if query.language == 'ru' else 'success' }}">
+                                            {{ 'Русский' if query.language == 'ru' else 'Қазақша' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ query.user_question[:80] }}{% if query.user_question|length > 80 %}...{% endif %}</td>
+                                    <td>{{ "%.2f"|format(query.response_time) }}с</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{{ url_for('admin_panel.queries') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>Посмотреть все
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Пока нет запросов от пользователей.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Documents -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">Последние документы</h6>
+            </div>
+            <div class="card-body">
+                {% if recent_documents %}
+                    {% for document in recent_documents %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <i class="fas fa-file-{{ 'pdf' if document.file_type == 'pdf' else 'word' if document.file_type in ['doc', 'docx'] else 'alt' }} fa-2x text-muted"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="small font-weight-bold">{{ document.original_filename }}</div>
+                                <div class="small text-muted">{{ document.upload_date.strftime('%d.%m.%Y %H:%M') }}</div>
+                                <div class="small text-muted">{{ "%.1f"|format(document.file_size / 1024) }} KB</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center">
+                        <a href="{{ url_for('admin_panel.documents') }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-eye me-1"></i>Все документы
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Нет загруженных документов</p>
+                    <div class="text-center">
+                        <a href="{{ url_for('admin_panel.upload_document') }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-upload me-1"></i>Загрузить первый документ
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

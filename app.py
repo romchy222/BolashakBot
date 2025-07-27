@@ -1,19 +1,13 @@
 import os
 import logging
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, session, redirect, url_for, flash, render_template
 from flask_cors import CORS
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from database import db
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
-
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
 
 # create the app
 app = Flask(__name__)
@@ -47,17 +41,46 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 # initialize the app with the extension
 db.init_app(app)
 
-# Import views to register routes
-from views import *
-# from admin import admin_bp
+# Authentication first, before any other imports
+from auth import check_credentials
 
-# Register blueprints  
-# app.register_blueprint(admin_bp, url_prefix='/admin')
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_auth():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if check_credentials(username, password):
+            session['admin_logged_in'] = True
+            flash('Успешный вход в систему', 'success')
+            return redirect('/admin/')
+        else:
+            flash('Неверные учетные данные', 'error')
+    
+    return render_template('admin/login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    flash('Вы вышли из системы', 'info')
+    return redirect('/admin/login')
+
+# Import views to register main routes
+from views import register_views
+register_views(app)
+
+# Import and register admin blueprint AFTER auth routes are defined
+from admin import admin_bp
+app.register_blueprint(admin_bp, url_prefix='/admin')
 
 with app.app_context():
     # Import models to ensure tables are created
     import models
     db.create_all()
+    
+    # Initialize upload folder
+    import document_processor
+    document_processor.init_upload_folder()
     
     # Create initial data if needed
     from models import Category, FAQ
