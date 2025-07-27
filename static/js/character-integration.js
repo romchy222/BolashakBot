@@ -222,7 +222,6 @@ class CharacterIntegration {
                 lastBotContainer.classList.remove('active-character-message');
             }, 3000);
         }
-            }
     }
 
     onUserMessage(text) {

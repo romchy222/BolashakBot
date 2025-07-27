@@ -18,14 +18,6 @@ class ChatWidget {
         } catch (e) {
             console.log('Не удалось получить аватар из localStorage');
         }
-        this.userAvatar = null; // Храним ссылку на аватар пользователя, если есть
-
-        // Пытаемся получить аватар из localStorage
-        try {
-            this.userAvatar = localStorage.getItem('qabyldaubot_user_avatar');
-        } catch (e) {
-            console.log('Не удалось получить аватар из localStorage');
-        }
 
         // Debounce click handler
         this.toggleChatDebounced = this.debounce(this.toggleChat.bind(this), 300);
