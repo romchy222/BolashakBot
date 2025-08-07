@@ -122,7 +122,17 @@ const CharacterConfig = {
             y: -20                  // Смещение по Y от кнопки чата
         },
         zIndex: 10000,              // Z-index для персонажа
-        responsive: true            // Адаптивное позиционирование
+        responsive: true,           // Адаптивное позиционирование
+        connectToMessages: true     // Соединять персонажа с сообщениями чата
+    },
+
+    // Интеграция с аватарами
+    avatarIntegration: {
+        enabled: true,              // Включить интеграцию аватаров
+        replaceAvatars: true,       // Заменять аватары бота на персонажа
+        connectVisually: true,      // Визуально соединять персонажа с сообщениями
+        animateWithSpeech: true,    // Анимировать связь во время речи
+        defaultUserAvatar: null     // URL изображения для аватара пользователя по умолчанию
     },
 
     // === ПОВЕДЕНИЕ ===

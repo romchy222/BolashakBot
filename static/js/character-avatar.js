@@ -64,6 +64,11 @@ class CharacterAvatar {
             this.speechBubble = this.createSpeechBubble();
             this.container.appendChild(this.speechBubble);
         }
+
+                // Добавляем визуальную связь с последним сообщением
+                if (this.config.positioning.connectToMessages) {
+                    this.connectToLastMessage();
+                }
         
         // Добавляем в DOM
         const targetContainer = document.getElementById(this.config.positioning.container) || document.body;
@@ -442,6 +447,48 @@ class CharacterAvatar {
         // Произносим текст
         this.speechSynthesis.speak(utterance);
     }
+
+        /**
+         * Создает визуальную связь между персонажем и последним сообщением
+         */
+        connectToLastMessage() {
+            // Проверяем поддержку в настройках
+            if (!this.config.avatarIntegration?.enabled) return;
+
+            // Находим последнее сообщение бота
+            const chatMessages = document.getElementById('chat-messages');
+            if (!chatMessages) return;
+
+            const botContainers = chatMessages.querySelectorAll('.avatar-container.with-character-avatar');
+            if (botContainers.length === 0) return;
+
+            const lastBotContainer = botContainers[botContainers.length - 1];
+
+            // Добавляем соединительный элемент, если его еще нет
+            let connector = lastBotContainer.querySelector('.character-message-connector');
+            if (!connector) {
+                connector = document.createElement('div');
+                connector.className = 'character-message-connector';
+                lastBotContainer.appendChild(connector);
+            }
+
+            // Анимируем соединитель
+            setTimeout(() => {
+                connector.style.transform = 'scaleX(1)';
+
+                // Когда персонаж говорит, усиливаем эффект
+                if (this.isSpeaking && this.config.avatarIntegration.animateWithSpeech) {
+                    connector.style.opacity = '0.8';
+                    connector.style.height = '3px';
+
+                    // Возвращаем обычный вид после речи
+                    setTimeout(() => {
+                        connector.style.opacity = '0.3';
+                        connector.style.height = '2px';
+                    }, 1000);
+                }
+            }, 100);
+        }
 
     startSpeakingAnimation() {
         if (!this.config.animations.speaking.enabled) return;

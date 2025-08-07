@@ -7,15 +7,6 @@ from mistral_client import MistralClient
 
 mistral_client = MistralClient()
 
-import time
-import logging
-from flask import render_template, request, jsonify, session, current_app
-from models import UserQuery, FAQ, Category
-from database import db
-from mistral_client import MistralClient
-
-mistral_client = MistralClient()
-
 def register_views(app):
     """Register all view functions with the app"""
     
@@ -50,11 +41,11 @@ def register_views(app):
             
             # Log the query
             user_query = UserQuery(
-                user_question=user_message,
-                ai_response=ai_response,
+                query_text=user_message,
+                bot_response=ai_response,
                 language=language,
-                ip_address=request.remote_addr,
-                user_agent=request.headers.get('User-Agent'),
+                user_ip=request.remote_addr,
+                session_id=session.get('session_id', ''),
                 response_time=response_time
             )
             
@@ -82,6 +73,11 @@ def register_views(app):
     def widget():
         """Standalone widget page for embedding"""
         return render_template('widget.html')
+
+    @app.route('/user-settings')
+    def user_settings():
+        """User settings page for chat customization"""
+        return render_template('user-settings.html')
 
     @app.route('/debug')
     def debug():

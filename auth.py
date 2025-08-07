@@ -8,8 +8,15 @@ from flask import session, request, redirect, url_for, flash, render_template
 
 # Default admin credentials (should be changed in production)
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', 
-    hashlib.sha256('admin123'.encode()).hexdigest())  # Default: admin123
+
+# If ADMIN_PASSWORD_HASH is not set, use default hash (for development only)
+default_hash = hashlib.sha256('admin123'.encode()).hexdigest()  # Default: admin123
+ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', default_hash)
+
+# Warning for production environments
+if os.environ.get('FLASK_ENV') == 'production' and ADMIN_PASSWORD_HASH == default_hash:
+    import logging
+    logging.warning('WARNING: Using default admin password in production environment!')
 
 def hash_password(password):
     """Hash a password using SHA256"""

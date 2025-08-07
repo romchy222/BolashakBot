@@ -192,6 +192,36 @@ class CharacterIntegration {
         if (!this.character.isVisible) {
             this.character.show();
         }
+
+        // Подсвечиваем последнее сообщение бота
+        this.highlightLastBotMessage();
+            }
+
+            // Подсвечивание последнего сообщения бота для связи с персонажем
+            highlightLastBotMessage() {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+
+        // Найти последний контейнер с сообщением бота
+        const botContainers = chatMessages.querySelectorAll('.avatar-container.with-character-avatar');
+        if (botContainers.length === 0) return;
+
+        const lastBotContainer = botContainers[botContainers.length - 1];
+
+        // Добавить класс активного сообщения
+        lastBotContainer.classList.add('active-character-message');
+
+        // Добавить небольшую анимацию для привлечения внимания
+        const botMessage = lastBotContainer.querySelector('.bot-message');
+        if (botMessage) {
+            botMessage.style.boxShadow = '0 0 8px rgba(59, 87, 179, 0.5)';
+
+            // Убрать эффект через несколько секунд
+            setTimeout(() => {
+                botMessage.style.boxShadow = '';
+                lastBotContainer.classList.remove('active-character-message');
+            }, 3000);
+        }
     }
 
     onUserMessage(text) {

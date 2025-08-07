@@ -1,17 +1,27 @@
 import os
 import logging
+import secrets
+from dotenv import load_dotenv
 
 from flask import Flask, request, session, redirect, url_for, flash, render_template
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 from database import db
 
+# Load environment variables from .env file if it exists
+load_dotenv()
+
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG if os.environ.get('FLASK_ENV') == 'development' else logging.INFO)
 
 # create the app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
+
+# Secure secret key generation - ensure a new one is generated if not set in environment
+if not os.environ.get("SESSION_SECRET") and app.config['ENV'] == 'production':
+    logging.warning("SESSION_SECRET not set in production environment!")
+
+app.secret_key = os.environ.get("SESSION_SECRET", secrets.token_hex(32))
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure CORS
@@ -101,4 +111,19 @@ with app.app_context():
         logging.info("Initial categories created")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Проверяем, запущены ли мы на Replit
+    if os.environ.get('REPL_ID'):
+        # Автоматически применяем миграции при запуске на Replit
+        try:
+            from setup_db import run_migrations
+            print("Применение миграций базы данных...")
+            run_migrations()
+        except Exception as e:
+            print(f"Предупреждение: не удалось применить миграции: {e}")
+
+        # Используем порт из переменной окружения Replit
+        port = int(os.environ.get('PORT', 8080))
+        app.run(host='0.0.0.0', port=port, debug=os.environ.get('FLASK_ENV') == 'development')
+    else:
+        # Стандартный запуск для локальной разработки
+        app.run(host='0.0.0.0', port=5000, debug=True)

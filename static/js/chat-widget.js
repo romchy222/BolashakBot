@@ -9,6 +9,16 @@ class ChatWidget {
         this.isTyping = false;
         this.initialized = false;
 
+        // Инициализация аватара пользователя
+        this.userAvatar = null;
+
+        // Пытаемся получить аватар из localStorage
+        try {
+            this.userAvatar = localStorage.getItem('qabyldaubot_user_avatar');
+        } catch (e) {
+            console.log('Не удалось получить аватар из localStorage');
+        }
+
         // Debounce click handler
         this.toggleChatDebounced = this.debounce(this.toggleChat.bind(this), 300);
 
@@ -207,6 +217,51 @@ class ChatWidget {
 
         console.log('✅ События успешно привязаны');
     }
+
+        /**
+         * Установка аватара пользователя
+         * @param {string} imageUrl - URL изображения или цвет аватара
+         * @returns {boolean} Успешность операции
+         */
+        setUserAvatar(imageUrl) {
+            // Сохраняем ссылку на аватар
+            this.userAvatar = imageUrl;
+
+            // Сохраняем в localStorage для будущих сессий
+            try {
+                localStorage.setItem('qabyldaubot_user_avatar', imageUrl);
+            } catch (e) {
+                console.log('Не удалось сохранить аватар в localStorage');
+                return false;
+            }
+
+            // Обновляем все существующие аватары пользователя
+            const userAvatars = document.querySelectorAll('.user-avatar');
+            userAvatars.forEach(avatar => {
+                // Очищаем содержимое
+                avatar.innerHTML = '';
+
+                // Если это URL или путь к изображению
+                if (imageUrl.startsWith('http') || imageUrl.startsWith('/') || imageUrl.startsWith('data:')) {
+                    avatar.style.backgroundImage = `url(${imageUrl})`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.backgroundPosition = 'center';
+                    avatar.style.backgroundColor = 'transparent';
+                } 
+                // Если это цвет
+                else if (imageUrl.startsWith('#') || imageUrl.startsWith('rgb')) {
+                    avatar.style.backgroundImage = '';
+                    avatar.style.backgroundColor = imageUrl;
+
+                    // Добавляем иконку пользователя
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-user';
+                    avatar.appendChild(icon);
+                }
+            });
+
+            return true;
+        }
 
     toggleChat() {
         console.log('🔄 toggleChat вызван');
@@ -551,6 +606,27 @@ class ChatWidget {
             setTimeout(() => {
                 this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
             }, 100);
+        }
+
+        setUserAvatar(imageUrl) {
+            // Сохраняем ссылку на аватар
+            this.userAvatar = imageUrl;
+
+            // Сохраняем в localStorage для будущих сессий
+            try {
+                localStorage.setItem('qabyldaubot_user_avatar', imageUrl);
+            } catch (e) {
+                console.log('Не удалось сохранить аватар в localStorage');
+            }
+
+            // Обновляем все существующие аватары пользователя
+            const userAvatars = document.querySelectorAll('.user-avatar');
+            userAvatars.forEach(avatar => {
+                avatar.innerHTML = '';
+                avatar.style.backgroundImage = `url(${imageUrl})`;
+            });
+
+            return true;
         }
     }
 

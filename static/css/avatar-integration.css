@@ -1,0 +1,162 @@
+/* Интеграция аватаров с системой персонажа */
+
+/* Контейнеры для сообщений с аватарами */
+.avatar-container {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.user-avatar-container {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+/* Стили аватаров */
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 2px solid white;
+    flex-shrink: 0;
+}
+
+.user-avatar-container .avatar {
+    margin-left: 8px;
+    margin-right: 0;
+}
+
+.bot-avatar {
+    background-color: #1e40af;
+    color: white;
+}
+
+.user-avatar {
+    background-color: #4b5563;
+    color: white;
+}
+
+/* Контейнер для текста сообщения */
+.message-container {
+    flex: 1;
+    max-width: calc(100% - 50px);
+}
+
+.user-avatar-container .message-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Стили сообщений */
+.bot-message {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    max-width: 100%;
+    position: relative;
+}
+
+.user-message {
+    background: #1e40af;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    max-width: 100%;
+    position: relative;
+}
+
+/* Стрелочки для пузырей сообщений */
+.bot-message:after {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 15px;
+    border: 8px solid transparent;
+    border-right-color: white;
+    border-left: 0;
+}
+
+.user-message:after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 15px;
+    border: 8px solid transparent;
+    border-left-color: #1e40af;
+    border-right: 0;
+}
+
+/* Специальные стили для интеграции с системой персонажа */
+.with-character-avatar .bot-message:after {
+    display: none; /* Скрываем стрелочку когда используется персонаж */
+}
+
+.with-character-avatar {
+    margin-left: 40px; /* Дополнительное пространство для персонажа */
+}
+
+/* Стили для активного сообщения персонажа */
+.active-character-message .bot-message {
+    border-left: 3px solid #3b57b3;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Визуальное соединение персонажа с сообщением */
+.character-message-connector {
+    position: absolute;
+    left: -40px;
+    top: 18px;
+    width: 40px;
+    height: 2px;
+    background: rgba(59, 87, 179, 0.3);
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.active-character-message .character-message-connector {
+    transform: scaleX(1);
+}
+
+/* Анимации для сообщений */
+.bot-message, .user-message {
+    animation: message-appear 0.3s ease-out;
+}
+
+@keyframes message-appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 640px) {
+    .avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    .message-container {
+        max-width: calc(100% - 40px);
+    }
+
+    .with-character-avatar {
+        margin-left: 20px;
+    }
+}
